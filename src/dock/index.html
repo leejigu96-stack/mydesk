@@ -13,6 +13,16 @@ body {
   justify-content: center;
   padding-bottom: 6px;
   -webkit-app-region: no-drag;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 자동 숨김 모드 - 마우스 떨어졌을 때 살짝 아래로 (작은 줄만 보임) */
+body.auto-hide {
+  transform: translateY(72px);
+}
+
+body.auto-hide:hover {
+  transform: translateY(0);
 }
 
 .dock {
@@ -39,20 +49,21 @@ body {
 
 .dock-item {
   position: relative;
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 26px;
   cursor: pointer;
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: bottom center;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
   border: 1px solid rgba(255, 255, 255, 0.06);
   user-select: none;
   flex-shrink: 0;
+  /* 자체 transition 빼고 JS에서 직접 제어 (raf 기반 부드러운 보간) */
+  will-change: transform;
 }
 
 [data-theme="light"] .dock-item {
@@ -153,44 +164,111 @@ body {
 </div>
 
 <script>
+const T = window.__TAURI__;
 const items = Array.from(document.querySelectorAll('.dock-item'));
-
-// 마우스 위치 따라 인접 아이콘 확대 (맥 magnification)
 const dock = document.getElementById('dock');
-let mouseX = -1;
+
+// 자동 숨김 — 기본 OFF, 설정에서 ON 가능
+let autoHide = false;
+let dockVisible = true;
+
+async function setAutoHide(enabled) {
+  autoHide = enabled;
+  if (!T) return;
+  if (enabled) {
+    // 자동 숨김 ON: dock 살짝 내려 보이게
+    document.body.classList.add('auto-hide');
+  } else {
+    document.body.classList.remove('auto-hide');
+  }
+}
+
+// 설정 변경 감지 → 자동 숨김 동기화
+if (T) {
+  T.event.listen('config-changed', (e) => {
+    if (e.payload && typeof e.payload.dock_autohide !== 'undefined') {
+      setAutoHide(e.payload.dock_autohide);
+    }
+  });
+  T.core.invoke('get_config').then(cfg => {
+    if (cfg.dock_autohide) setAutoHide(true);
+    if (cfg.theme) document.documentElement.dataset.theme = cfg.theme;
+  }).catch(() => {});
+  T.event.listen('theme-changed', (e) => {
+    document.documentElement.dataset.theme = e.payload;
+  });
+}
+
+// 맥 스타일 magnification — 가우시안 분포 + 부드러운 raf 보간
+// targetMouseX: 실제 마우스 X 좌표 / smoothMouseX: 보간된 값 (관성)
+let targetMouseX = -1;
+let smoothMouseX = -1;
+let active = false;
+let rafId = null;
+
+// 파라미터 (맥 dock 비슷하게 튜닝)
+const MAX_SCALE = 1.65;      // 최대 확대
+const SIGMA = 70;            // 가우시안 표준편차 (영향 거리)
+const LIFT_MAX = 16;         // 최대 위로 올라가는 거리
+const SMOOTH_FACTOR = 0.32;  // 마우스 추적 보간 (0~1, 클수록 즉시)
 
 dock.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  updateMagnification();
+  targetMouseX = e.clientX;
+  active = true;
+  if (!rafId) rafId = requestAnimationFrame(tick);
 });
 
 dock.addEventListener('mouseleave', () => {
-  mouseX = -1;
-  items.forEach(it => {
-    it.style.transform = '';
-    it.style.setProperty('--s', '1');
-  });
+  active = false;
+  targetMouseX = -1;
 });
 
-function updateMagnification() {
+function tick() {
+  // 마우스 위치 보간 (관성)
+  if (active) {
+    if (smoothMouseX < 0) smoothMouseX = targetMouseX;
+    smoothMouseX += (targetMouseX - smoothMouseX) * SMOOTH_FACTOR;
+  } else {
+    // 떠날 때도 부드럽게 평소 크기로
+    if (smoothMouseX < 0) {
+      items.forEach(item => {
+        item.style.transform = '';
+        item.style.setProperty('--s', '1');
+      });
+      rafId = null;
+      return;
+    }
+  }
+
+  let allBase = true;
+
   items.forEach(item => {
     const rect = item.getBoundingClientRect();
     const center = rect.left + rect.width / 2;
-    const dist = Math.abs(mouseX - center);
-    const maxDist = 120;
+    let scale = 1;
+    let lift = 0;
 
-    if (dist < maxDist) {
-      // 거리 기반 확대 (가까울수록 큼)
-      const factor = 1 - dist / maxDist;
-      const scale = 1 + factor * 0.45;
-      const lift = factor * 10;
-      item.style.transform = `scale(${scale}) translateY(-${lift}px)`;
-      item.style.setProperty('--s', scale.toString());
-    } else {
-      item.style.transform = '';
-      item.style.setProperty('--s', '1');
+    if (active && smoothMouseX > 0) {
+      const dist = Math.abs(smoothMouseX - center);
+      // 가우시안: e^(-d²/(2σ²))
+      const factor = Math.exp(-(dist * dist) / (2 * SIGMA * SIGMA));
+      scale = 1 + factor * (MAX_SCALE - 1);
+      lift = factor * LIFT_MAX;
     }
+
+    if (Math.abs(scale - 1) > 0.005) allBase = false;
+    item.style.transform = `scale(${scale.toFixed(3)}) translateY(${-lift.toFixed(2)}px)`;
+    item.style.setProperty('--s', scale.toFixed(3));
   });
+
+  // 비활성 + 다 기본 크기면 raf 종료
+  if (!active && allBase) {
+    smoothMouseX = -1;
+    rafId = null;
+    return;
+  }
+
+  rafId = requestAnimationFrame(tick);
 }
 
 // 클릭 → 앱 실행

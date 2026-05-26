@@ -358,14 +358,23 @@ fn toggle_window(app: &tauri::AppHandle, label: &str) {
     }
 }
 
+// Primary 모니터 가져오기 (멀티 모니터 환경에서 안전)
+fn primary_monitor(w: &tauri::WebviewWindow) -> Option<tauri::Monitor> {
+    // Tauri 2 API: primary_monitor 시도, 없으면 첫 모니터
+    w.primary_monitor().ok().flatten()
+        .or_else(|| w.available_monitors().ok().and_then(|v| v.into_iter().next()))
+}
+
 fn position_dock(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("dock") {
-        if let Ok(Some(m)) = w.current_monitor() {
+        if let Some(m) = primary_monitor(&w) {
+            let pos = m.position();
             let size = m.size();
             let dock_size = w.outer_size().unwrap_or_default();
-            let x = (size.width as i32 - dock_size.width as i32) / 2;
-            // 작업표시줄(48px) 위에 12px 띄우기
-            let y = size.height as i32 - dock_size.height as i32 - 60;
+            // Primary 모니터 기준 좌표 (다른 모니터 안 가도록)
+            let x = pos.x + (size.width as i32 - dock_size.width as i32) / 2;
+            // 작업표시줄(48px) 위에 8px 띄우기
+            let y = pos.y + size.height as i32 - dock_size.height as i32 - 56;
             let _ = w.set_position(tauri::PhysicalPosition { x, y });
         }
     }
@@ -373,11 +382,13 @@ fn position_dock(app: &tauri::AppHandle) {
 
 fn position_widgets(app: &tauri::AppHandle) {
     if let Some(w) = app.get_webview_window("widgets") {
-        if let Ok(Some(m)) = w.current_monitor() {
+        if let Some(m) = primary_monitor(&w) {
+            let pos = m.position();
             let size = m.size();
             let widget_size = w.outer_size().unwrap_or_default();
-            let x = size.width as i32 - widget_size.width as i32 - 20;
-            let y = 20;
+            // Primary 모니터 우측 상단
+            let x = pos.x + size.width as i32 - widget_size.width as i32 - 20;
+            let y = pos.y + 20;
             let _ = w.set_position(tauri::PhysicalPosition { x, y });
         }
     }

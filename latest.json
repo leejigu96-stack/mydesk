@@ -1,11 +1,11 @@
 {
-  "version": "0.2.0",
-  "notes": "MyDesk v0.2.0 — 진짜 작동 버전\n\n변화:\n- 독 아이콘 클릭하면 진짜로 앱 실행됨\n- 위젯 데이터 실시간 (시계, Claude 세션 카운트, 누끼 큐)\n- 설정 토글이 실제로 모듈 ON/OFF 함\n- 다크/라이트 테마 모든 창 동기화\n- 시스템 튜너 자동 최적화 (임시파일 + 좀비 정리 + 휴지통)\n- 작업 모드 6개 전환 가능\n- 맥 스타일 dock magnification (인접 아이콘 확대)\n- 메모 위젯 자동 저장",
-  "pub_date": "2026-05-26T02:00:00Z",
+  "version": "0.2.2",
+  "notes": "v0.2.2 — 위치/표시 수정\n\n변화:\n- 독과 위젯이 항상 보이도록 (alwaysOnTop 복구)\n- 멀티 모니터 환경에서 primary 모니터에 강제 위치\n- 독 자동 숨김 옵션 추가 (마우스 가까이 가야 떠오름)\n- 독 magnification 가우시안 보간 (진짜 맥 스타일)",
+  "pub_date": "2026-05-26T02:50:00Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.2.0/MyDesk_0.2.0_x64-setup.exe"
+      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.2.2/MyDesk_0.2.2_x64-setup.exe"
     }
   }
 }
