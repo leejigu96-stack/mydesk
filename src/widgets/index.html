@@ -11,47 +11,69 @@ html, body { width: 100vw; height: 100vh; overflow: hidden; background: transpar
 body {
   padding: 14px;
   transition: opacity 0.25s var(--ease);
-  opacity: 0.62;
+  opacity: 0.7;
 }
 body:hover { opacity: 1; }
 
 .widgets {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   width: 232px;
 }
 
-/* 맥 위젯 — 둥글고 깔끔한 카드 */
+/* 진짜 맥 위젯 - 흰색/검정 (반투명 X, 거의 불투명) */
 .widget {
-  background: var(--vib-bg-strong);
-  backdrop-filter: blur(50px) saturate(180%);
-  -webkit-backdrop-filter: blur(50px) saturate(180%);
-  border: 0.5px solid var(--sys-border);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-card);
+  background: var(--sys-elevated);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 0.5px solid var(--sys-border-thin);
+  border-radius: 22px;
+  box-shadow: var(--shadow-widget);
   overflow: hidden;
 }
 
-/* ========== 시계 위젯 (맥 시계 위젯 따라함) ========== */
+/* ====== 시계 위젯 — 맥 World Clock 따라함 ====== */
 .w-clock {
-  padding: 18px 20px 16px;
+  padding: 16px 18px 14px;
+}
+
+.clock-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .clock-time {
-  font-family: -apple-system, "SF Pro Display", "Pretendard", system-ui;
-  font-size: 52px;
+  font-family: -apple-system, "SF Pro Display", system-ui;
+  font-size: 56px;
   font-weight: 200;
-  letter-spacing: -0.04em;
-  line-height: 1;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
-  margin-bottom: 6px;
 }
 
 .clock-time .colon {
-  opacity: 0.65;
-  margin: 0 -2px;
+  opacity: 0.55;
+  margin: 0 -3px;
+  font-weight: 100;
+}
+
+.clock-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.clock-ampm {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .clock-date {
@@ -59,9 +81,10 @@ body:hover { opacity: 1; }
   font-weight: 500;
   color: var(--text-secondary);
   letter-spacing: -0.005em;
+  margin-top: 4px;
 }
 
-/* ========== 누끼 위젯 ========== */
+/* ====== 누끼 위젯 — 맥 Reminders 스타일 ====== */
 .w-nokki {
   padding: 14px 16px 16px;
 }
@@ -70,86 +93,102 @@ body:hover { opacity: 1; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .w-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  letter-spacing: -0.005em;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
 }
 
-.w-title .icon { font-size: 12px; }
-
-.w-action {
+.w-title-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #c084fc 0%, #6366f1 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 10px;
+}
+
+.w-status {
+  font-size: 10px;
+  font-weight: 500;
   color: var(--text-tertiary);
+  letter-spacing: -0.005em;
 }
 
 .nokki-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 12px;
 }
 
-.nokki-stat {
-  flex: 1;
-  text-align: left;
-}
+.nokki-stat { flex: 1; }
 
-.nokki-stat-num {
+.nokki-num {
   font-family: -apple-system, "SF Pro Display", system-ui;
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
   line-height: 1;
 }
 
-.nokki-stat-label {
+.nokki-num.err { color: var(--accent-red); }
+.nokki-num.pending { color: var(--accent-orange); }
+
+.nokki-label {
   font-size: 10px;
   color: var(--text-tertiary);
-  margin-top: 3px;
+  margin-top: 4px;
   font-weight: 500;
 }
 
 .nokki-progress {
-  height: 3px;
-  background: var(--vib-tint);
+  height: 4px;
+  background: var(--vib-overlay);
   border-radius: 2px;
   overflow: hidden;
 }
 
 .nokki-bar {
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, #c084fc 0%, #6366f1 100%);
   border-radius: 2px;
   width: 0%;
-  transition: width 0.5s var(--ease);
+  transition: width 0.6s var(--ease);
 }
 
-/* ========== Claude 위젯 ========== */
+/* ====== Claude 위젯 ====== */
 .w-claude {
   padding: 14px 16px 16px;
 }
 
-.claude-main {
+.w-title-icon.claude {
+  background: linear-gradient(135deg, #ff7a59 0%, #d4361e 100%);
+}
+
+.claude-big {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 4px;
+  margin: 6px 0 4px;
 }
 
 .claude-num {
   font-family: -apple-system, "SF Pro Display", system-ui;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 300;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
   color: var(--text-primary);
   line-height: 1;
@@ -161,25 +200,36 @@ body:hover { opacity: 1; }
   font-weight: 500;
 }
 
-.claude-sub {
+.claude-status-row {
   display: flex;
   align-items: center;
   gap: 5px;
   font-size: 11px;
   color: var(--text-tertiary);
+  font-weight: 500;
 }
 
-.claude-dot {
-  width: 5px;
-  height: 5px;
+.live-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #34c759;
-  box-shadow: 0 0 4px rgba(52, 199, 89, 0.6);
+  background: var(--accent-green);
+  box-shadow: 0 0 6px rgba(52, 199, 89, 0.5);
 }
 
-/* ========== 메모 ========== */
+.live-dot.idle {
+  background: var(--text-tertiary);
+  box-shadow: none;
+}
+
+/* ====== 메모 ====== */
 .w-memo {
   padding: 14px 16px 14px;
+}
+
+.w-title-icon.memo {
+  background: linear-gradient(135deg, #ffeb3b 0%, #f9a825 100%);
+  color: #5d4037;
 }
 
 .memo {
@@ -192,16 +242,12 @@ body:hover { opacity: 1; }
   font-family: inherit;
   resize: none;
   outline: none;
-  line-height: 1.45;
-  margin-top: 6px;
+  line-height: 1.5;
+  margin-top: 8px;
+  letter-spacing: -0.005em;
 }
 
 .memo::placeholder { color: var(--text-tertiary); }
-
-/* 라이트 모드 시계 */
-[data-theme="light"] .clock-time {
-  color: rgba(0,0,0,0.88);
-}
 </style>
 </head>
 <body>
@@ -209,8 +255,13 @@ body:hover { opacity: 1; }
 
   <!-- 시계 -->
   <div class="widget w-clock">
-    <div class="clock-time">
-      <span id="hh">--</span><span class="colon">:</span><span id="mm">--</span>
+    <div class="clock-row">
+      <div class="clock-time">
+        <span id="hh">--</span><span class="colon">:</span><span id="mm">--</span>
+      </div>
+      <div class="clock-meta">
+        <div class="clock-ampm" id="ampm">PM</div>
+      </div>
     </div>
     <div class="clock-date" id="date">로딩 중</div>
   </div>
@@ -218,21 +269,24 @@ body:hover { opacity: 1; }
   <!-- 누끼 -->
   <div class="widget w-nokki">
     <div class="w-header">
-      <div class="w-title"><span class="icon">✂︎</span> 누끼</div>
-      <div class="w-action" id="nokki-action">대기</div>
+      <div class="w-title">
+        <div class="w-title-icon">✂</div>
+        누끼 작업
+      </div>
+      <div class="w-status" id="nokki-status">대기</div>
     </div>
     <div class="nokki-row">
       <div class="nokki-stat">
-        <div class="nokki-stat-num" id="n-pending">0</div>
-        <div class="nokki-stat-label">대기</div>
+        <div class="nokki-num pending" id="n-pending">0</div>
+        <div class="nokki-label">대기</div>
       </div>
       <div class="nokki-stat">
-        <div class="nokki-stat-num" id="n-done">0</div>
-        <div class="nokki-stat-label">완료</div>
+        <div class="nokki-num" id="n-done">0</div>
+        <div class="nokki-label">완료</div>
       </div>
       <div class="nokki-stat">
-        <div class="nokki-stat-num" id="n-err">0</div>
-        <div class="nokki-stat-label">오류</div>
+        <div class="nokki-num err" id="n-err">0</div>
+        <div class="nokki-label">오류</div>
       </div>
     </div>
     <div class="nokki-progress"><div class="nokki-bar" id="n-bar"></div></div>
@@ -241,14 +295,17 @@ body:hover { opacity: 1; }
   <!-- Claude -->
   <div class="widget w-claude">
     <div class="w-header">
-      <div class="w-title"><span class="icon">●</span> Claude</div>
+      <div class="w-title">
+        <div class="w-title-icon claude">●</div>
+        Claude
+      </div>
     </div>
-    <div class="claude-main">
+    <div class="claude-big">
       <span class="claude-num" id="c-count">0</span>
       <span class="claude-label">세션 활성</span>
     </div>
-    <div class="claude-sub">
-      <span class="claude-dot"></span>
+    <div class="claude-status-row">
+      <span class="live-dot" id="c-dot"></span>
       <span id="c-sub">대기 중</span>
     </div>
   </div>
@@ -256,23 +313,28 @@ body:hover { opacity: 1; }
   <!-- 메모 -->
   <div class="widget w-memo">
     <div class="w-header">
-      <div class="w-title"><span class="icon">✎</span> 메모</div>
-      <div class="w-action" id="memo-status">저장됨</div>
+      <div class="w-title">
+        <div class="w-title-icon memo">✎</div>
+        메모
+      </div>
+      <div class="w-status" id="memo-status">저장됨</div>
     </div>
-    <textarea class="memo" id="memo" placeholder="간단한 메모..."></textarea>
+    <textarea class="memo" id="memo" placeholder="간단한 메모를 적어보세요..."></textarea>
   </div>
 
 </div>
 
 <script>
 const T = window.__TAURI__;
-
-function pad(n) { return String(n).padStart(2, '0'); }
+const pad = n => String(n).padStart(2, '0');
 
 function updateClockLocal() {
   const now = new Date();
-  document.getElementById('hh').textContent = pad(now.getHours());
+  let h = now.getHours();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  document.getElementById('hh').textContent = pad(h);
   document.getElementById('mm').textContent = pad(now.getMinutes());
+  document.getElementById('ampm').textContent = ampm;
   const days = ['일','월','화','수','목','금','토'];
   document.getElementById('date').textContent =
     `${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;
@@ -282,35 +344,27 @@ async function refreshData() {
   if (!T) { updateClockLocal(); return; }
   try {
     const d = await T.core.invoke('get_widget_data');
-
-    // 시계
     const [hh, mm] = d.clock_time.split(':');
     document.getElementById('hh').textContent = hh;
     document.getElementById('mm').textContent = mm;
-    // 짧은 날짜만 (5월 26일 화요일 식)
-    const dateMatch = d.clock_date.match(/(\d+)월 (\d+)일 (.)요일/);
-    if (dateMatch) {
-      document.getElementById('date').textContent = `${dateMatch[1]}월 ${dateMatch[2]}일 ${dateMatch[3]}요일`;
-    } else {
-      document.getElementById('date').textContent = d.clock_date;
-    }
+    const h = parseInt(hh, 10);
+    document.getElementById('ampm').textContent = h >= 12 ? 'PM' : 'AM';
+    document.getElementById('date').textContent = d.clock_date.replace(/^\d{4}년 /, '');
 
-    // 누끼
     document.getElementById('n-pending').textContent = d.nokki_pending;
     document.getElementById('n-done').textContent = d.nokki_done;
     document.getElementById('n-err').textContent = d.nokki_errors;
     const total = d.nokki_pending + d.nokki_done + d.nokki_errors;
     const pct = total > 0 ? Math.round(d.nokki_done / total * 100) : 0;
     document.getElementById('n-bar').style.width = pct + '%';
-    document.getElementById('nokki-action').textContent =
+    document.getElementById('nokki-status').textContent =
       d.nokki_pending > 0 ? '진행 중' : '대기';
 
-    // Claude
     document.getElementById('c-count').textContent = d.claude_count;
     document.getElementById('c-sub').textContent =
       d.claude_count > 0 ? `${d.claude_count}개 작업 중` : '대기 중';
-
-  } catch (err) { console.error(err); updateClockLocal(); }
+    document.getElementById('c-dot').classList.toggle('idle', d.claude_count === 0);
+  } catch (err) { updateClockLocal(); }
 }
 
 updateClockLocal();
@@ -318,7 +372,6 @@ refreshData();
 setInterval(updateClockLocal, 1000);
 setInterval(refreshData, 30000);
 
-// 메모 저장
 const memoEl = document.getElementById('memo');
 const memoStatus = document.getElementById('memo-status');
 memoEl.value = localStorage.getItem('mydesk-memo') || '';
@@ -332,7 +385,6 @@ memoEl.addEventListener('input', () => {
   }, 400);
 });
 
-// 테마 sync
 if (T) {
   T.event.listen('theme-changed', (e) => {
     document.documentElement.dataset.theme = e.payload;

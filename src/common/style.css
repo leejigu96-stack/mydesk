@@ -1,90 +1,94 @@
-/* MyDesk - 맥 Sequoia/Sonoma 영감 디자인 시스템
-   원칙: 무채색 위주, vibrancy, 미니멀, 폰트 위계 명확
+/* MyDesk v0.5 - 진짜 macOS Sequoia 디자인 시스템
+   레퍼런스: 512pixels macOS 15 Sequoia 스크린샷 + frontend.fyi CSS 토큰 분석
 */
 
-/* ========== 다크 (맥 Dark) ========== */
+/* ========== 시스템 색상 (맥 정확한 값) ========== */
 :root, [data-theme="dark"] {
-  /* 시스템 색 (맥 Dark) */
+  /* 다크 모드 - 맥 그대로 */
   --sys-bg: #1c1c1e;
-  --sys-surface: #2c2c2e;
-  --sys-surface-2: #3a3a3c;
-  --sys-separator: rgba(255, 255, 255, 0.07);
-  --sys-border: rgba(255, 255, 255, 0.1);
+  --sys-surface: rgba(28, 28, 30, 0.78);
+  --sys-elevated: rgba(44, 44, 46, 0.96);
+  --sys-separator: rgba(255, 255, 255, 0.1);
+  --sys-border-thin: rgba(255, 255, 255, 0.08);
+  --sys-border-strong: rgba(255, 255, 255, 0.16);
 
-  /* vibrancy (반투명 글래스) */
-  --vib-bg: rgba(28, 28, 30, 0.62);
-  --vib-bg-strong: rgba(28, 28, 30, 0.78);
-  --vib-tint: rgba(255, 255, 255, 0.06);
-  --vib-tint-strong: rgba(255, 255, 255, 0.12);
+  /* vibrancy (맥은 두 단계) */
+  --vib-thin: rgba(28, 28, 30, 0.5);
+  --vib-thick: rgba(28, 28, 30, 0.72);
+  --vib-overlay: rgba(255, 255, 255, 0.05);
 
   /* 텍스트 */
   --text-primary: rgba(255, 255, 255, 0.92);
-  --text-secondary: rgba(255, 255, 255, 0.55);
-  --text-tertiary: rgba(255, 255, 255, 0.32);
-  --text-quaternary: rgba(255, 255, 255, 0.18);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-tertiary: rgba(255, 255, 255, 0.36);
+  --text-quaternary: rgba(255, 255, 255, 0.2);
 
-  /* 그림자 (매우 미세) */
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.18), 0 1px 2px rgba(0, 0, 0, 0.12);
-  --shadow-elevated: 0 12px 36px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.16);
-  --shadow-dock: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 0.5px rgba(255, 255, 255, 0.06) inset;
+  /* dock 전용 */
+  --dock-bg-top: rgba(255, 255, 255, 0);
+  --dock-bg-bottom: rgba(255, 255, 255, 0.18);
+  --dock-bg-base: rgba(40, 40, 42, 0.72);
+  --dock-inset-border: rgba(255, 255, 255, 0.17);
 
-  /* 배경 */
-  --gradient-bg: linear-gradient(180deg, #1c1c1e 0%, #161617 100%);
+  /* 그림자 */
+  --shadow-widget: 0 8px 24px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.25);
+  --shadow-dock: 0 18px 56px rgba(0, 0, 0, 0.6);
 }
 
-/* ========== 라이트 (맥 Light) ========== */
 [data-theme="light"] {
-  --sys-bg: #f2f2f7;
-  --sys-surface: #ffffff;
-  --sys-surface-2: #f9f9fb;
-  --sys-separator: rgba(0, 0, 0, 0.06);
-  --sys-border: rgba(0, 0, 0, 0.08);
+  --sys-bg: #f5f5f7;
+  --sys-surface: rgba(255, 255, 255, 0.78);
+  --sys-elevated: rgba(255, 255, 255, 0.96);
+  --sys-separator: rgba(0, 0, 0, 0.08);
+  --sys-border-thin: rgba(0, 0, 0, 0.06);
+  --sys-border-strong: rgba(0, 0, 0, 0.12);
 
-  --vib-bg: rgba(255, 255, 255, 0.7);
-  --vib-bg-strong: rgba(255, 255, 255, 0.85);
-  --vib-tint: rgba(0, 0, 0, 0.04);
-  --vib-tint-strong: rgba(0, 0, 0, 0.08);
+  --vib-thin: rgba(255, 255, 255, 0.6);
+  --vib-thick: rgba(255, 255, 255, 0.82);
+  --vib-overlay: rgba(0, 0, 0, 0.04);
 
   --text-primary: rgba(0, 0, 0, 0.88);
   --text-secondary: rgba(0, 0, 0, 0.55);
   --text-tertiary: rgba(0, 0, 0, 0.32);
   --text-quaternary: rgba(0, 0, 0, 0.18);
 
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-elevated: 0 10px 28px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
-  --shadow-dock: 0 12px 36px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(0, 0, 0, 0.04) inset;
+  --dock-bg-top: rgba(255, 255, 255, 0);
+  --dock-bg-bottom: rgba(255, 255, 255, 0.5);
+  --dock-bg-base: rgba(255, 255, 255, 0.62);
+  --dock-inset-border: rgba(255, 255, 255, 0.9);
 
-  --gradient-bg: linear-gradient(180deg, #f2f2f7 0%, #e5e5ea 100%);
+  --shadow-widget: 0 6px 20px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 12px 36px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-dock: 0 12px 40px rgba(0, 0, 0, 0.18);
 }
 
-/* ========== 시스템 강조색 (맥 기본 파랑) ========== */
+/* 시스템 강조색 (맥 기본 파랑) */
 :root {
   --accent: #0a84ff;
   --accent-hover: #0070ed;
   --accent-pressed: #005ec4;
+  --accent-green: #34c759;
+  --accent-orange: #ff9500;
+  --accent-red: #ff3b30;
 
-  /* 둥글기 (맥 라운드) */
+  /* 맥 라운드 */
   --r-xs: 6px;
   --r-sm: 10px;
   --r-md: 14px;
-  --r-lg: 18px;
-  --r-xl: 22px;
+  --r-lg: 20px;
+  --r-xl: 24px;
 
-  /* 트랜지션 */
-  --ease: cubic-bezier(0.4, 0.0, 0.2, 1);
-  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Pretendard Variable", "Pretendard", "SF Pro Display", "Apple SD Gothic Neo", system-ui, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+               "Pretendard Variable", "Pretendard", "Apple SD Gothic Neo",
+               system-ui, sans-serif;
   font-size: 13px;
   color: var(--text-primary);
   background: transparent;
@@ -92,25 +96,18 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss02";
 }
 
-/* ========== 글래스 패널 (vibrancy) ========== */
-.vib {
-  background: var(--vib-bg);
+/* ========== 위젯 (맥 알림센터 위젯 스타일) ========== */
+.widget {
+  background: var(--sys-elevated);
   backdrop-filter: blur(50px) saturate(180%);
   -webkit-backdrop-filter: blur(50px) saturate(180%);
-  border: 0.5px solid var(--sys-border);
+  border: 0.5px solid var(--sys-border-thin);
   border-radius: var(--r-xl);
-}
-
-/* ========== 카드 ========== */
-.card {
-  background: var(--vib-bg-strong);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 0.5px solid var(--sys-border);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-widget);
+  overflow: hidden;
 }
 
 /* ========== 버튼 (맥 스타일) ========== */
@@ -122,17 +119,18 @@ html, body {
   padding: 7px 14px;
   font-size: 13px;
   font-weight: 500;
-  border: 0.5px solid var(--sys-border);
+  border: 0.5px solid var(--sys-border-thin);
   border-radius: var(--r-sm);
   cursor: pointer;
   transition: background 0.12s var(--ease), transform 0.08s var(--ease);
   user-select: none;
-  background: var(--vib-tint);
+  background: var(--vib-overlay);
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-.btn:hover { background: var(--vib-tint-strong); }
-.btn:active { transform: scale(0.98); }
+.btn:hover { background: var(--sys-border-thin); }
+.btn:active { transform: scale(0.97); }
 
 .btn-primary {
   background: var(--accent);
@@ -141,20 +139,14 @@ html, body {
   font-weight: 500;
 }
 
-.btn-primary:hover {
-  background: var(--accent-hover);
-}
-
-.btn-primary:active {
-  background: var(--accent-pressed);
-  transform: scale(0.98);
-}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-primary:active { background: var(--accent-pressed); transform: scale(0.97); }
 
 /* ========== 토글 (맥 스위치) ========== */
 .toggle {
   position: relative;
   display: inline-block;
-  width: 42px;
+  width: 44px;
   height: 26px;
   flex-shrink: 0;
 }
@@ -164,11 +156,11 @@ html, body {
 .toggle-slider {
   position: absolute;
   inset: 0;
-  background: var(--vib-tint);
+  background: var(--vib-overlay);
   border-radius: 14px;
   cursor: pointer;
-  transition: background 0.2s var(--ease);
-  border: 0.5px solid var(--sys-border);
+  transition: background 0.22s var(--ease);
+  border: 0.5px solid var(--sys-border-thin);
 }
 
 .toggle-slider::before {
@@ -176,8 +168,8 @@ html, body {
   position: absolute;
   height: 22px;
   width: 22px;
-  left: 1px;
-  top: 1px;
+  left: 1.5px;
+  top: 1.5px;
   background: white;
   border-radius: 50%;
   transition: transform 0.22s var(--ease);
@@ -185,21 +177,19 @@ html, body {
 }
 
 .toggle input:checked + .toggle-slider {
-  background: #34c759;  /* 맥 토글 ON = 녹색 */
+  background: var(--accent-green);
   border-color: transparent;
 }
 
-.toggle input:checked + .toggle-slider::before {
-  transform: translateX(16px);
-}
+.toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
 
 /* ========== 입력 ========== */
 .input, .select {
   width: 100%;
   padding: 7px 12px;
   font-size: 13px;
-  background: var(--vib-tint);
-  border: 0.5px solid var(--sys-border);
+  background: var(--vib-overlay);
+  border: 0.5px solid var(--sys-border-thin);
   border-radius: var(--r-sm);
   color: var(--text-primary);
   outline: none;
@@ -226,7 +216,7 @@ html, body {
   width: 100%;
   height: 4px;
   border-radius: 2px;
-  background: var(--vib-tint);
+  background: var(--vib-overlay);
   outline: none;
   -webkit-appearance: none;
   appearance: none;
@@ -234,8 +224,8 @@ html, body {
 
 .range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: white;
   border-radius: 50%;
   cursor: pointer;
@@ -246,45 +236,18 @@ html, body {
 .range::-webkit-slider-thumb:hover { transform: scale(1.1); }
 .range::-webkit-slider-thumb:active { transform: scale(0.95); }
 
-/* ========== 스크롤바 (맥 스타일) ========== */
+/* ========== 스크롤바 ========== */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(127, 127, 127, 0.35);
-  border-radius: 4px;
-}
+::-webkit-scrollbar-thumb { background: rgba(127, 127, 127, 0.35); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(127, 127, 127, 0.55); }
 
 /* ========== 폰트 위계 ========== */
-.h-title {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-}
-
-.h-headline {
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.h-body {
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.h-caption {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-secondary);
-}
-
-.h-mono {
-  font-family: "SF Mono", "Cascadia Code", Consolas, monospace;
-  font-variant-numeric: tabular-nums;
-}
+.h-title { font-size: 28px; font-weight: 700; letter-spacing: -0.022em; line-height: 1.1; }
+.h-headline { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.h-body { font-size: 13px; font-weight: 400; line-height: 1.45; }
+.h-caption { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+.h-mono { font-family: "SF Mono", "Cascadia Code", Consolas, monospace; font-variant-numeric: tabular-nums; }
 
 /* ========== 유틸 ========== */
 .flex { display: flex; }
@@ -304,18 +267,18 @@ html, body {
 }
 .fade-in { animation: fadeIn 0.25s var(--ease) both; }
 
-/* ========== 테마 토글 ========== */
+/* 테마 토글 (사이드바용) */
 .theme-toggle {
-  width: 42px;
+  width: 44px;
   height: 26px;
-  background: var(--vib-tint);
+  background: var(--vib-overlay);
   border-radius: 14px;
-  border: 0.5px solid var(--sys-border);
+  border: 0.5px solid var(--sys-border-thin);
   position: relative;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 1px;
+  padding: 1.5px;
 }
 
 .theme-toggle-ball {
@@ -332,4 +295,4 @@ html, body {
   color: #1c1c1e;
 }
 
-[data-theme="light"] .theme-toggle-ball { transform: translateX(16px); }
+[data-theme="light"] .theme-toggle-ball { transform: translateX(18px); }
