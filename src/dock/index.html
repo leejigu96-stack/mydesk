@@ -206,11 +206,11 @@ let smoothMouseX = -1;
 let active = false;
 let rafId = null;
 
-// 파라미터 (맥 dock 비슷하게 튜닝)
-const MAX_SCALE = 1.65;      // 최대 확대
-const SIGMA = 70;            // 가우시안 표준편차 (영향 거리)
-const LIFT_MAX = 16;         // 최대 위로 올라가는 거리
-const SMOOTH_FACTOR = 0.32;  // 마우스 추적 보간 (0~1, 클수록 즉시)
+// 파라미터 (맥 dock에 가깝게)
+const MAX_SCALE = 1.85;      // 최대 확대 (맥은 약 1.8~2.0)
+const SIGMA = 90;            // 가우시안 영향 범위 (넓어야 인접 아이콘도 자연스럽게 같이 커짐)
+const LIFT_MAX = 22;         // 최대 위로 올라가는 거리
+const SMOOTH_FACTOR = 0.25;  // 마우스 추적 보간 (작을수록 부드러움)
 
 dock.addEventListener('mousemove', (e) => {
   targetMouseX = e.clientX;

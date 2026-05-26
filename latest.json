@@ -1,11 +1,11 @@
 {
-  "version": "0.2.2",
-  "notes": "v0.2.2 — 위치/표시 수정\n\n변화:\n- 독과 위젯이 항상 보이도록 (alwaysOnTop 복구)\n- 멀티 모니터 환경에서 primary 모니터에 강제 위치\n- 독 자동 숨김 옵션 추가 (마우스 가까이 가야 떠오름)\n- 독 magnification 가우시안 보간 (진짜 맥 스타일)",
-  "pub_date": "2026-05-26T02:50:00Z",
+  "version": "0.2.3",
+  "notes": "v0.2.3 — 위젯 잘림 + magnification 강화\n\n변화:\n- 위젯 너비 320→280 줄여서 우측 잘림 해결\n- 위젯 평소 반투명(55%) → 마우스 가까이 가면 100%\n- Claude 세션 글자 잘림 방지 (ellipsis)\n- 독 magnification 더 강하게 (1.65→1.85배, 영향 범위 70→90)\n- 독 자동 숨김 기본 ON",
+  "pub_date": "2026-05-26T03:02:00Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.2.2/MyDesk_0.2.2_x64-setup.exe"
+      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.2.3/MyDesk_0.2.3_x64-setup.exe"
     }
   }
 }

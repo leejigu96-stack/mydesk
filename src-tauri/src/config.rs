@@ -58,7 +58,7 @@ impl Default for AppConfig {
             wallpaper_speed: 100,
             dock_position: "bottom".to_string(),
             dock_size: 56,
-            dock_autohide: false,
+            dock_autohide: true,
             dock_magnification: true,
             widget_position: "top-right".to_string(),
             widget_opacity: 85,

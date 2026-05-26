@@ -7,13 +7,21 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100vw; height: 100vh; overflow: hidden; background: transparent; }
-body { padding: 20px; }
+body {
+  padding: 12px;
+  transition: opacity 0.3s var(--ease);
+  opacity: 0.55;  /* 평소엔 반투명 */
+}
+
+body:hover {
+  opacity: 1;  /* 마우스 가까이 가면 진해짐 */
+}
 
 .widget-container {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  width: 280px;
+  gap: 12px;
+  width: 256px;
 }
 
 .widget {
@@ -22,9 +30,9 @@ body { padding: 20px; }
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
+  padding: 16px 18px;
   box-shadow: var(--shadow-lg);
-  transition: all 0.2s var(--ease);
+  transition: transform 0.25s var(--ease), border-color 0.2s var(--ease), box-shadow 0.25s var(--ease);
   cursor: default;
 }
 
@@ -198,8 +206,19 @@ body { padding: 20px; }
 .claude-dot.idle { background: var(--warning); }
 .claude-dot.off { background: var(--text-tertiary); }
 
-.claude-name { flex: 1; font-size: 13px; }
-.claude-status { font-size: 11px; color: var(--text-tertiary); }
+.claude-name {
+  flex: 1;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.claude-status {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
 
 .no-claude {
   font-size: 12px;
