@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <title>MyDesk Widgets</title>
@@ -7,480 +7,337 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100vw; height: 100vh; overflow: hidden; background: transparent; }
+
 body {
-  padding: 12px;
-  transition: opacity 0.3s var(--ease);
-  opacity: 0.55;  /* 평소엔 반투명 */
+  padding: 14px;
+  transition: opacity 0.25s var(--ease);
+  opacity: 0.62;
 }
+body:hover { opacity: 1; }
 
-body:hover {
-  opacity: 1;  /* 마우스 가까이 가면 진해짐 */
-}
-
-.widget-container {
+.widgets {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 236px;
+  width: 232px;
 }
 
+/* 맥 위젯 — 둥글고 깔끔한 카드 */
 .widget {
-  background: var(--bg-glass);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  box-shadow: var(--shadow-lg);
-  transition: transform 0.25s var(--ease), border-color 0.2s var(--ease), box-shadow 0.25s var(--ease);
-  cursor: default;
+  background: var(--vib-bg-strong);
+  backdrop-filter: blur(50px) saturate(180%);
+  -webkit-backdrop-filter: blur(50px) saturate(180%);
+  border: 0.5px solid var(--sys-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
 }
 
-.widget:hover {
-  border-color: var(--border-strong);
-  transform: translateY(-1px);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.5);
+/* ========== 시계 위젯 (맥 시계 위젯 따라함) ========== */
+.w-clock {
+  padding: 18px 20px 16px;
 }
 
-.widget-header {
+.clock-time {
+  font-family: -apple-system, "SF Pro Display", "Pretendard", system-ui;
+  font-size: 52px;
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.clock-time .colon {
+  opacity: 0.65;
+  margin: 0 -2px;
+}
+
+.clock-date {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: -0.005em;
+}
+
+/* ========== 누끼 위젯 ========== */
+.w-nokki {
+  padding: 14px 16px 16px;
+}
+
+.w-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.widget-title {
+.w-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: -0.005em;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-tertiary);
+  gap: 5px;
 }
 
-.widget-icon { font-size: 14px; }
+.w-title .icon { font-size: 12px; }
 
-/* 시계 */
-.clock-time {
-  font-size: 56px;
-  font-weight: 200;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 4px;
-  font-variant-numeric: tabular-nums;
-}
-
-[data-theme="light"] .clock-time {
-  background: linear-gradient(180deg, #1a1a1a 0%, #4a4a4a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-
-.clock-seconds {
-  font-size: 28px;
-  opacity: 0.5;
-  font-variant-numeric: tabular-nums;
-}
-
-.clock-date {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin-top: 6px;
-}
-
-/* 매출 */
-.sales-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.sales-item {
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.25);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  transition: all 0.15s var(--ease);
-}
-
-[data-theme="light"] .sales-item { background: rgba(0, 0, 0, 0.03); }
-
-.sales-item:hover { background: rgba(0, 0, 0, 0.35); border-color: var(--border-strong); }
-[data-theme="light"] .sales-item:hover { background: rgba(0, 0, 0, 0.06); }
-
-.sales-label {
+.w-action {
   font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--text-tertiary);
-  margin-bottom: 4px;
 }
 
-.sales-amount {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.sales-delta {
-  font-size: 11px;
-  margin-top: 2px;
-}
-
-.sales-delta.up { color: var(--success); }
-.sales-delta.down { color: var(--danger); }
-
-/* 누끼 */
-.queue-stats {
+.nokki-row {
   display: flex;
-  gap: 16px;
-  margin-bottom: 14px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
-.queue-stat { flex: 1; }
-.queue-stat-num {
-  font-size: 28px;
-  font-weight: 700;
+.nokki-stat {
+  flex: 1;
+  text-align: left;
+}
+
+.nokki-stat-num {
+  font-family: -apple-system, "SF Pro Display", system-ui;
+  font-size: 22px;
+  font-weight: 600;
   letter-spacing: -0.02em;
-  transition: color 0.3s;
-}
-.queue-stat-num.has-pending { color: var(--warning); }
-.queue-stat-num.has-error { color: var(--danger); }
-
-.queue-stat-label {
-  font-size: 11px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
 }
 
-.queue-progress {
-  height: 6px;
-  background: var(--bg-glass-light);
-  border-radius: 3px;
+.nokki-stat-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+.nokki-progress {
+  height: 3px;
+  background: var(--vib-tint);
+  border-radius: 2px;
   overflow: hidden;
 }
 
-.queue-bar {
+.nokki-bar {
   height: 100%;
-  background: var(--accent-grad);
-  border-radius: 3px;
+  background: var(--accent);
+  border-radius: 2px;
   width: 0%;
-  transition: width 0.6s var(--ease);
+  transition: width 0.5s var(--ease);
 }
 
-.queue-progress-text {
-  font-size: 11px;
+/* ========== Claude 위젯 ========== */
+.w-claude {
+  padding: 14px 16px 16px;
+}
+
+.claude-main {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.claude-num {
+  font-family: -apple-system, "SF Pro Display", system-ui;
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.claude-label {
+  font-size: 12px;
   color: var(--text-secondary);
-  margin-top: 6px;
-  text-align: right;
+  font-weight: 500;
 }
 
-/* Claude */
-.claude-list { display: flex; flex-direction: column; gap: 4px; }
-
-.claude-row {
+.claude-sub {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 5px 0;
-  transition: opacity 0.2s;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-tertiary);
 }
 
 .claude-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--success);
-  flex-shrink: 0;
-  box-shadow: 0 0 6px currentColor;
+  background: #34c759;
+  box-shadow: 0 0 4px rgba(52, 199, 89, 0.6);
 }
 
-.claude-dot.idle { background: var(--warning); }
-.claude-dot.off { background: var(--text-tertiary); }
-
-.claude-name {
-  flex: 1;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-.claude-status {
-  font-size: 10px;
-  color: var(--text-tertiary);
-  flex-shrink: 0;
+/* ========== 메모 ========== */
+.w-memo {
+  padding: 14px 16px 14px;
 }
 
-.no-claude {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  font-style: italic;
-  text-align: center;
-  padding: 8px;
-}
-
-/* 날씨 */
-.weather-main {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
-}
-
-.weather-icon { font-size: 48px; }
-
-.weather-temp {
-  font-size: 36px;
-  font-weight: 300;
-  letter-spacing: -0.02em;
-}
-
-.weather-info {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-soft);
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-/* 메모 */
 .memo {
   width: 100%;
-  min-height: 70px;
+  min-height: 60px;
   background: transparent;
   border: none;
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: 12.5px;
   font-family: inherit;
   resize: none;
   outline: none;
-  line-height: 1.5;
+  line-height: 1.45;
+  margin-top: 6px;
 }
 
 .memo::placeholder { color: var(--text-tertiary); }
 
-.pulse {
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+/* 라이트 모드 시계 */
+[data-theme="light"] .clock-time {
+  color: rgba(0,0,0,0.88);
 }
 </style>
 </head>
 <body>
-<div class="widget-container">
+<div class="widgets">
 
-  <div class="widget" id="w-clock">
-    <div class="widget-header">
-      <div class="widget-title"><span class="widget-icon">🕐</span> 시계</div>
+  <!-- 시계 -->
+  <div class="widget w-clock">
+    <div class="clock-time">
+      <span id="hh">--</span><span class="colon">:</span><span id="mm">--</span>
     </div>
-    <div class="clock-time"><span id="clock-hm">--:--</span><span class="clock-seconds" id="clock-s">:--</span></div>
-    <div class="clock-date" id="clock-date">로딩 중...</div>
+    <div class="clock-date" id="date">로딩 중</div>
   </div>
 
-  <div class="widget" id="w-sales">
-    <div class="widget-header">
-      <div class="widget-title"><span class="widget-icon">💰</span> ResellOn 매출</div>
-      <div class="text-sm pulse" style="color: #f87171; font-weight: 700; font-size: 9px; letter-spacing: 0.1em;">● LIVE</div>
+  <!-- 누끼 -->
+  <div class="widget w-nokki">
+    <div class="w-header">
+      <div class="w-title"><span class="icon">✂︎</span> 누끼</div>
+      <div class="w-action" id="nokki-action">대기</div>
     </div>
-    <div class="sales-grid">
-      <div class="sales-item">
-        <div class="sales-label">오늘</div>
-        <div class="sales-amount" id="sales-today">--</div>
-        <div class="sales-delta up">▲ --</div>
+    <div class="nokki-row">
+      <div class="nokki-stat">
+        <div class="nokki-stat-num" id="n-pending">0</div>
+        <div class="nokki-stat-label">대기</div>
       </div>
-      <div class="sales-item">
-        <div class="sales-label">이번주</div>
-        <div class="sales-amount" id="sales-week">--</div>
-        <div class="sales-delta up">▲ --</div>
+      <div class="nokki-stat">
+        <div class="nokki-stat-num" id="n-done">0</div>
+        <div class="nokki-stat-label">완료</div>
+      </div>
+      <div class="nokki-stat">
+        <div class="nokki-stat-num" id="n-err">0</div>
+        <div class="nokki-stat-label">오류</div>
       </div>
     </div>
+    <div class="nokki-progress"><div class="nokki-bar" id="n-bar"></div></div>
   </div>
 
-  <div class="widget" id="w-nokki">
-    <div class="widget-header">
-      <div class="widget-title"><span class="widget-icon">✂️</span> 누끼 작업</div>
-      <span class="badge badge-success" id="nokki-badge">대기</span>
+  <!-- Claude -->
+  <div class="widget w-claude">
+    <div class="w-header">
+      <div class="w-title"><span class="icon">●</span> Claude</div>
     </div>
-    <div class="queue-stats">
-      <div class="queue-stat">
-        <div class="queue-stat-num" id="nokki-pending">0</div>
-        <div class="queue-stat-label">대기</div>
-      </div>
-      <div class="queue-stat">
-        <div class="queue-stat-num" id="nokki-done">0</div>
-        <div class="queue-stat-label">완료</div>
-      </div>
-      <div class="queue-stat">
-        <div class="queue-stat-num" id="nokki-errors">0</div>
-        <div class="queue-stat-label">오류</div>
-      </div>
+    <div class="claude-main">
+      <span class="claude-num" id="c-count">0</span>
+      <span class="claude-label">세션 활성</span>
     </div>
-    <div class="queue-progress">
-      <div class="queue-bar" id="nokki-bar"></div>
-    </div>
-    <div class="queue-progress-text" id="nokki-text">진행률 --</div>
-  </div>
-
-  <div class="widget" id="w-claude">
-    <div class="widget-header">
-      <div class="widget-title"><span class="widget-icon">🤖</span> Claude 세션</div>
-      <div class="text-sm" id="claude-count">--</div>
-    </div>
-    <div class="claude-list" id="claude-list">
-      <div class="no-claude">활성 세션 없음</div>
+    <div class="claude-sub">
+      <span class="claude-dot"></span>
+      <span id="c-sub">대기 중</span>
     </div>
   </div>
 
-  <div class="widget" id="w-weather">
-    <div class="widget-header">
-      <div class="widget-title"><span class="widget-icon">☁️</span> 울산 남구</div>
+  <!-- 메모 -->
+  <div class="widget w-memo">
+    <div class="w-header">
+      <div class="w-title"><span class="icon">✎</span> 메모</div>
+      <div class="w-action" id="memo-status">저장됨</div>
     </div>
-    <div class="weather-main">
-      <div class="weather-icon">⛅</div>
-      <div>
-        <div class="weather-temp" id="weather-temp">--°</div>
-        <div class="text-sm" id="weather-desc">--</div>
-      </div>
-    </div>
-    <div class="weather-info">
-      <div>최고 23° · 최저 14°</div>
-      <div>습도 62%</div>
-    </div>
-  </div>
-
-  <div class="widget" id="w-memo">
-    <div class="widget-header">
-      <div class="widget-title"><span class="widget-icon">📝</span> 메모</div>
-      <div class="text-sm text-tertiary" id="memo-status">자동 저장</div>
-    </div>
-    <textarea class="memo" id="memo-input" placeholder="빠른 메모..."></textarea>
+    <textarea class="memo" id="memo" placeholder="간단한 메모..."></textarea>
   </div>
 
 </div>
 
 <script>
+const T = window.__TAURI__;
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
 function updateClockLocal() {
   const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('clock-hm').textContent = `${hh}:${mm}`;
-  document.getElementById('clock-s').textContent = `:${ss}`;
-
+  document.getElementById('hh').textContent = pad(now.getHours());
+  document.getElementById('mm').textContent = pad(now.getMinutes());
   const days = ['일','월','화','수','목','금','토'];
-  document.getElementById('clock-date').textContent =
-    `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;
+  document.getElementById('date').textContent =
+    `${now.getMonth()+1}월 ${now.getDate()}일 ${days[now.getDay()]}요일`;
 }
 
-async function refreshWidgetData() {
-  if (!window.__TAURI__) {
-    updateClockLocal();
-    return;
-  }
+async function refreshData() {
+  if (!T) { updateClockLocal(); return; }
   try {
-    const data = await window.__TAURI__.core.invoke('get_widget_data');
+    const d = await T.core.invoke('get_widget_data');
 
-    // 시계는 백엔드 시간으로 매번 sync
-    document.getElementById('clock-hm').textContent = data.clock_time;
-    document.getElementById('clock-date').textContent = data.clock_date;
-
-    // 매출
-    document.getElementById('sales-today').textContent = data.sales_today;
-    document.getElementById('sales-week').textContent = data.sales_week;
+    // 시계
+    const [hh, mm] = d.clock_time.split(':');
+    document.getElementById('hh').textContent = hh;
+    document.getElementById('mm').textContent = mm;
+    // 짧은 날짜만 (5월 26일 화요일 식)
+    const dateMatch = d.clock_date.match(/(\d+)월 (\d+)일 (.)요일/);
+    if (dateMatch) {
+      document.getElementById('date').textContent = `${dateMatch[1]}월 ${dateMatch[2]}일 ${dateMatch[3]}요일`;
+    } else {
+      document.getElementById('date').textContent = d.clock_date;
+    }
 
     // 누끼
-    const total = data.nokki_pending + data.nokki_done + data.nokki_errors;
-    const pct = total > 0 ? Math.round(data.nokki_done / total * 100) : 0;
-    document.getElementById('nokki-pending').textContent = data.nokki_pending;
-    document.getElementById('nokki-done').textContent = data.nokki_done;
-    document.getElementById('nokki-errors').textContent = data.nokki_errors;
-    document.getElementById('nokki-bar').style.width = pct + '%';
-    document.getElementById('nokki-text').textContent = `${data.nokki_done} / ${total} (${pct}%)`;
-
-    const pEl = document.getElementById('nokki-pending');
-    const eEl = document.getElementById('nokki-errors');
-    pEl.classList.toggle('has-pending', data.nokki_pending > 0);
-    eEl.classList.toggle('has-error', data.nokki_errors > 0);
-
-    const badge = document.getElementById('nokki-badge');
-    if (data.nokki_pending > 0) {
-      badge.textContent = '진행 중';
-      badge.className = 'badge badge-warning';
-    } else {
-      badge.textContent = '대기';
-      badge.className = 'badge badge-success';
-    }
+    document.getElementById('n-pending').textContent = d.nokki_pending;
+    document.getElementById('n-done').textContent = d.nokki_done;
+    document.getElementById('n-err').textContent = d.nokki_errors;
+    const total = d.nokki_pending + d.nokki_done + d.nokki_errors;
+    const pct = total > 0 ? Math.round(d.nokki_done / total * 100) : 0;
+    document.getElementById('n-bar').style.width = pct + '%';
+    document.getElementById('nokki-action').textContent =
+      d.nokki_pending > 0 ? '진행 중' : '대기';
 
     // Claude
-    document.getElementById('claude-count').textContent = `${data.claude_count}개 활성`;
-    const list = document.getElementById('claude-list');
-    if (data.claude_sessions.length === 0) {
-      list.innerHTML = '<div class="no-claude">활성 세션 없음</div>';
-    } else {
-      list.innerHTML = data.claude_sessions.map(([name, status, color]) => `
-        <div class="claude-row">
-          <div class="claude-dot ${color === 'green' ? '' : color === 'yellow' ? 'idle' : 'off'}"></div>
-          <div class="claude-name">${name}</div>
-          <div class="claude-status">${status}</div>
-        </div>
-      `).join('');
-    }
+    document.getElementById('c-count').textContent = d.claude_count;
+    document.getElementById('c-sub').textContent =
+      d.claude_count > 0 ? `${d.claude_count}개 작업 중` : '대기 중';
 
-    // 날씨
-    document.getElementById('weather-temp').textContent = data.weather_temp;
-    document.getElementById('weather-desc').textContent = data.weather_desc;
-  } catch (err) {
-    console.error('위젯 데이터 실패:', err);
-    updateClockLocal();
-  }
+  } catch (err) { console.error(err); updateClockLocal(); }
 }
 
-// 시계는 1초마다, 나머지는 30초마다
 updateClockLocal();
-refreshWidgetData();
-setInterval(() => {
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, '0');
-  const mm = String(now.getMinutes()).padStart(2, '0');
-  const ss = String(now.getSeconds()).padStart(2, '0');
-  document.getElementById('clock-hm').textContent = `${hh}:${mm}`;
-  document.getElementById('clock-s').textContent = `:${ss}`;
-}, 1000);
-setInterval(refreshWidgetData, 30000);
+refreshData();
+setInterval(updateClockLocal, 1000);
+setInterval(refreshData, 30000);
 
-// 메모 localStorage 저장
-const memo = document.getElementById('memo-input');
+// 메모 저장
+const memoEl = document.getElementById('memo');
 const memoStatus = document.getElementById('memo-status');
-memo.value = localStorage.getItem('mydesk-memo') || '';
+memoEl.value = localStorage.getItem('mydesk-memo') || '';
 let memoTimer;
-memo.addEventListener('input', () => {
+memoEl.addEventListener('input', () => {
   memoStatus.textContent = '저장 중...';
   clearTimeout(memoTimer);
   memoTimer = setTimeout(() => {
-    localStorage.setItem('mydesk-memo', memo.value);
-    memoStatus.textContent = '자동 저장';
-  }, 500);
+    localStorage.setItem('mydesk-memo', memoEl.value);
+    memoStatus.textContent = '저장됨';
+  }, 400);
 });
 
 // 테마 sync
-if (window.__TAURI__) {
-  window.__TAURI__.event.listen('theme-changed', (e) => {
+if (T) {
+  T.event.listen('theme-changed', (e) => {
     document.documentElement.dataset.theme = e.payload;
   });
-  window.__TAURI__.core.invoke('get_config').then(cfg => {
+  T.core.invoke('get_config').then(cfg => {
     if (cfg.theme) document.documentElement.dataset.theme = cfg.theme;
   }).catch(() => {});
 }

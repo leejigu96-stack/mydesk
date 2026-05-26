@@ -371,10 +371,11 @@ fn position_dock(app: &tauri::AppHandle) {
             let pos = m.position();
             let size = m.size();
             let dock_size = w.outer_size().unwrap_or_default();
-            // Primary 모니터 기준 좌표 (다른 모니터 안 가도록)
+            // Primary 가로 중앙
             let x = pos.x + (size.width as i32 - dock_size.width as i32) / 2;
-            // 작업표시줄(48px) 위에 8px 띄우기
-            let y = pos.y + size.height as i32 - dock_size.height as i32 - 56;
+            // 작업표시줄(약 48px) 위에 dock이 안 가리게 — dock 본체는 창 하단 6px 위니까
+            // 창 height의 dock 바닥 = creator 56px 정도 아래 있음
+            let y = pos.y + size.height as i32 - dock_size.height as i32 - 4;
             let _ = w.set_position(tauri::PhysicalPosition { x, y });
         }
     }
@@ -386,9 +387,9 @@ fn position_widgets(app: &tauri::AppHandle) {
             let pos = m.position();
             let size = m.size();
             let widget_size = w.outer_size().unwrap_or_default();
-            // 우측 안쪽으로 40px 여유 두기 (잘림 방지)
-            let x = pos.x + size.width as i32 - widget_size.width as i32 - 40;
-            let y = pos.y + 16;
+            // 우측 안쪽 16px 여유 (창은 260, 내부 body padding 14px이라 잘릴 일 없음)
+            let x = pos.x + size.width as i32 - widget_size.width as i32 - 16;
+            let y = pos.y + 12;
             let _ = w.set_position(tauri::PhysicalPosition { x, y });
         }
     }

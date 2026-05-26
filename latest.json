@@ -1,11 +1,11 @@
 {
-  "version": "0.3.0",
-  "notes": "v0.3.0 — 한 방에 큰 수정\n\n- 위젯 너비 280→260, 위치 우측 안쪽 40px 여유 (잘림 진짜 해결)\n- magnification 진짜 맥 스타일: SIGMA 90→38 (영향 범위 좁게), MAX_SCALE 1.85→1.55, LIFT 22→10\n- 자동 숨김 기본 OFF (사용자가 거슬리면 설정에서 ON)\n- 마우스 위 1~2개 아이콘만 부드럽게 커지고 나머지는 평소 크기",
-  "pub_date": "2026-05-26T03:17:00Z",
+  "version": "0.4.0",
+  "notes": "v0.4.0 — 맥 디자인 전면 재작성\n\n- 디자인 시스템 다시 (맥 Sequoia 영감)\n- 무채색 위주, 강조 파랑 #0a84ff 하나만\n- vibrancy 강화 (blur 50px saturate 180-200%)\n- 매출 위젯 제거\n- Claude/누끼 위젯 미니멀하게\n- Dock 창 높이 130 (확대해도 안 잘림)\n- 폰트 위계: 시계는 200 weight (Ultra Light), 헤더 600, 본문 400\n- 토글 맥 스타일 (녹색 ON)",
+  "pub_date": "2026-05-26T03:39:00Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.3.0/MyDesk_0.3.0_x64-setup.exe"
+      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.4.0/MyDesk_0.4.0_x64-setup.exe"
     }
   }
 }

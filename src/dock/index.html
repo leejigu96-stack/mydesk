@@ -1,166 +1,147 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <title>MyDesk Dock</title>
 <link rel="stylesheet" href="../common/style.css">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100vw; height: 100vh; overflow: hidden; background: transparent; }
+html, body { width: 100vw; height: 100vh; overflow: visible; background: transparent; }
+
 body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
   padding-bottom: 6px;
   -webkit-app-region: no-drag;
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-/* 자동 숨김 모드 - 마우스 떨어졌을 때 살짝 아래로 (작은 줄만 보임) */
-body.auto-hide {
-  transform: translateY(72px);
-}
-
-body.auto-hide:hover {
-  transform: translateY(0);
 }
 
 .dock {
   display: flex;
   align-items: flex-end;
-  gap: 4px;
-  padding: 8px 12px;
-  background: rgba(28, 28, 32, 0.72);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 22px;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-}
-
-[data-theme="light"] .dock {
-  background: rgba(255, 255, 255, 0.78);
-  border-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  gap: 3px;
+  padding: 5px 6px;
+  background: var(--vib-bg-strong);
+  backdrop-filter: blur(50px) saturate(200%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%);
+  border: 0.5px solid var(--sys-border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-dock);
 }
 
 .dock-item {
   position: relative;
   width: 48px;
   height: 48px;
-  border-radius: 11px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 28px;
   cursor: pointer;
   transform-origin: bottom center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(255, 255, 255, 0.06);
   user-select: none;
   flex-shrink: 0;
-  /* 자체 transition 빼고 JS에서 직접 제어 (raf 기반 부드러운 보간) */
   will-change: transform;
+  overflow: hidden;
+  /* 부드러운 transition은 raf에서 직접 제어 */
 }
 
-[data-theme="light"] .dock-item {
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.02));
-  border-color: rgba(0, 0, 0, 0.04);
-}
+.dock-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
-/* 클릭 효과 */
-.dock-item.pressed {
-  transform: scale(0.88) translateY(0) !important;
-  transition: transform 0.06s ease-out;
-}
-
-/* 점프 효과 (앱 실행 시) */
-@keyframes jump {
-  0%, 100% { transform: translateY(0) scale(var(--s, 1)); }
-  50% { transform: translateY(-12px) scale(var(--s, 1)); }
-}
-
-.dock-item.jumping { animation: jump 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-
-.dock-divider {
-  width: 1px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 0 6px;
-  align-self: center;
-}
-
-[data-theme="light"] .dock-divider { background: rgba(0, 0, 0, 0.1); }
-
+/* 실행 중 점 (맥처럼 작은 흰 점, 독 바닥에) */
 .dock-item.running::after {
   content: "";
   position: absolute;
   bottom: -6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.7);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.75);
 }
 
-[data-theme="light"] .dock-item.running::after { background: rgba(0, 0, 0, 0.5); }
+[data-theme="light"] .dock-item.running::after {
+  background: rgba(0, 0, 0, 0.5);
+}
 
-/* 툴팁 */
-.dock-item::before {
-  content: attr(data-name);
+/* 구분선 (시스템 / 휴지통 영역 분리) */
+.dock-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--sys-separator);
+  margin: 0 4px;
+  align-self: center;
+}
+
+/* 툴팁 — 맥 스타일 */
+.dock-item .tooltip {
   position: absolute;
-  bottom: calc(100% + 14px);
+  bottom: calc(100% + 18px);
   left: 50%;
-  transform: translateX(-50%) translateY(4px) scale(0.9);
-  background: rgba(0, 0, 0, 0.88);
+  transform: translateX(-50%) translateY(2px);
+  background: rgba(40, 40, 42, 0.92);
+  backdrop-filter: blur(20px);
   color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
-  z-index: 10;
+  transition: opacity 0.12s var(--ease), transform 0.12s var(--ease);
+  z-index: 100;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
 }
 
-.dock-item:hover::before {
+.dock-item.tooltip-show .tooltip {
   opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(1);
+  transform: translateX(-50%) translateY(0);
+  transition-delay: 0.35s;
 }
 
-/* 앱 배경색 */
-.app-chrome { background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335); }
-.app-claude { background: linear-gradient(135deg, #ff7a59, #ff4940); }
-.app-resellon { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-.app-nokki { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
-.app-vscode { background: linear-gradient(135deg, #007acc, #0066b8); color: white; }
-.app-photoshop { background: linear-gradient(135deg, #001e36, #31a8ff); color: white; font-weight: 700; }
-.app-kakao { background: linear-gradient(135deg, #fee500, #fdd835); color: #3c1e1e; }
-.app-files { background: linear-gradient(135deg, #06b6d4, #0891b2); }
-.app-settings { background: linear-gradient(135deg, #64748b, #475569); }
-.app-trash { background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); }
+/* 앱 아이콘 배경 */
+.app-chrome { background: linear-gradient(135deg, #4285f4 0%, #34a853 33%, #fbbc04 66%, #ea4335 100%); }
+.app-claude { background: linear-gradient(135deg, #ff7a59 0%, #ff4940 100%); }
+.app-resellon { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+.app-nokki { background: linear-gradient(135deg, #af52de 0%, #5e5ce6 100%); }
+.app-vscode { background: linear-gradient(135deg, #007acc 0%, #0066b8 100%); color: white; }
+.app-photoshop { background: linear-gradient(135deg, #001e36 0%, #31a8ff 100%); color: white; font-weight: 800; font-size: 22px; font-family: -apple-system, sans-serif; }
+.app-kakao { background: linear-gradient(135deg, #fee500 0%, #fbc02d 100%); color: #3c1e1e; }
+.app-files { background: linear-gradient(135deg, #5ac8fa 0%, #007aff 100%); }
+.app-settings { background: linear-gradient(135deg, #8e8e93 0%, #636366 100%); }
+.app-trash {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+[data-theme="light"] .app-trash {
+  background: linear-gradient(135deg, rgba(0,0,0,0.05), rgba(0,0,0,0.02));
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+/* 자동 숨김 */
+body.auto-hide {
+  transform: translateY(72px);
+  transition: transform 0.3s var(--ease);
+}
+body.auto-hide:hover { transform: translateY(0); }
 </style>
 </head>
 <body>
 <div class="dock" id="dock">
-  <div class="dock-item app-chrome running" data-name="Chrome" data-app="chrome">🌐</div>
-  <div class="dock-item app-claude running" data-name="Claude" data-app="claude">🤖</div>
-  <div class="dock-item app-resellon running" data-name="ResellOn 업로드" data-app="resellon">📦</div>
-  <div class="dock-item app-nokki" data-name="누끼 GUI" data-app="nokki">✂️</div>
-  <div class="dock-item app-vscode" data-name="VS Code" data-app="vscode">💻</div>
-  <div class="dock-item app-photoshop" data-name="포토샵" data-app="photoshop">Ps</div>
-  <div class="dock-item app-kakao running" data-name="카카오톡" data-app="kakao">💬</div>
+  <div class="dock-item app-chrome running" data-name="Chrome" data-app="chrome">🌐<div class="tooltip">Chrome</div></div>
+  <div class="dock-item app-claude running" data-name="Claude" data-app="claude">🤖<div class="tooltip">Claude</div></div>
+  <div class="dock-item app-resellon running" data-name="ResellOn" data-app="resellon">📦<div class="tooltip">ResellOn</div></div>
+  <div class="dock-item app-nokki" data-name="누끼 GUI" data-app="nokki">✂️<div class="tooltip">누끼 GUI</div></div>
+  <div class="dock-item app-vscode" data-name="VS Code" data-app="vscode">💻<div class="tooltip">VS Code</div></div>
+  <div class="dock-item app-photoshop" data-name="포토샵" data-app="photoshop">Ps<div class="tooltip">포토샵</div></div>
+  <div class="dock-item app-kakao running" data-name="카카오톡" data-app="kakao">💬<div class="tooltip">카카오톡</div></div>
   <div class="dock-divider"></div>
-  <div class="dock-item app-files" data-name="파일 탐색기" data-app="files">📁</div>
-  <div class="dock-item app-settings" data-name="MyDesk 설정" data-app="settings">⚙️</div>
-  <div class="dock-item app-trash" data-name="휴지통" data-app="trash">🗑️</div>
+  <div class="dock-item app-files" data-name="파일 탐색기" data-app="files">📁<div class="tooltip">파일 탐색기</div></div>
+  <div class="dock-item app-settings" data-name="MyDesk 설정" data-app="settings">⚙️<div class="tooltip">MyDesk 설정</div></div>
+  <div class="dock-item app-trash" data-name="휴지통" data-app="trash">🗑️<div class="tooltip">휴지통</div></div>
 </div>
 
 <script>
@@ -168,144 +149,99 @@ const T = window.__TAURI__;
 const items = Array.from(document.querySelectorAll('.dock-item'));
 const dock = document.getElementById('dock');
 
-// 자동 숨김 — 기본 OFF, 설정에서 ON 가능
-let autoHide = false;
-let dockVisible = true;
-
-async function setAutoHide(enabled) {
-  autoHide = enabled;
-  if (!T) return;
-  if (enabled) {
-    // 자동 숨김 ON: dock 살짝 내려 보이게
-    document.body.classList.add('auto-hide');
-  } else {
-    document.body.classList.remove('auto-hide');
-  }
-}
-
-// 설정 변경 감지 → 자동 숨김 동기화
-if (T) {
-  T.event.listen('config-changed', (e) => {
-    if (e.payload && typeof e.payload.dock_autohide !== 'undefined') {
-      setAutoHide(e.payload.dock_autohide);
-    }
-  });
-  T.core.invoke('get_config').then(cfg => {
-    if (cfg.dock_autohide) setAutoHide(true);
-    if (cfg.theme) document.documentElement.dataset.theme = cfg.theme;
-  }).catch(() => {});
-  T.event.listen('theme-changed', (e) => {
-    document.documentElement.dataset.theme = e.payload;
-  });
-}
-
-// 맥 스타일 magnification — 가우시안 분포 + 부드러운 raf 보간
-// targetMouseX: 실제 마우스 X 좌표 / smoothMouseX: 보간된 값 (관성)
-let targetMouseX = -1;
-let smoothMouseX = -1;
+// 맥 dock magnification — 가까운 1~2개만 부드럽게
+let targetX = -1;
+let smoothX = -1;
 let active = false;
 let rafId = null;
 
-// 파라미터 — 진짜 맥 dock에 가깝게 (영향 범위 좁고 가운데 1~2개만 커짐)
-const MAX_SCALE = 1.55;      // 최대 확대 — 너무 크면 어색
-const SIGMA = 38;            // 영향 범위 좁게 — 마우스 바로 위 아이콘만 크고 나머지는 살짝
-const LIFT_MAX = 10;         // 위로 살짝만
-const SMOOTH_FACTOR = 0.22;  // 마우스 추적 보간 (관성)
+const MAX_SCALE = 1.55;
+const SIGMA = 35;          // 좁은 영향 범위 (맥과 비슷)
+const LIFT_MAX = 8;
+const SMOOTH = 0.22;
 
 dock.addEventListener('mousemove', (e) => {
-  targetMouseX = e.clientX;
+  targetX = e.clientX;
   active = true;
   if (!rafId) rafId = requestAnimationFrame(tick);
 });
-
 dock.addEventListener('mouseleave', () => {
   active = false;
-  targetMouseX = -1;
 });
 
 function tick() {
-  // 마우스 위치 보간 (관성)
   if (active) {
-    if (smoothMouseX < 0) smoothMouseX = targetMouseX;
-    smoothMouseX += (targetMouseX - smoothMouseX) * SMOOTH_FACTOR;
-  } else {
-    // 떠날 때도 부드럽게 평소 크기로
-    if (smoothMouseX < 0) {
-      items.forEach(item => {
-        item.style.transform = '';
-        item.style.setProperty('--s', '1');
-      });
-      rafId = null;
-      return;
-    }
+    if (smoothX < 0) smoothX = targetX;
+    smoothX += (targetX - smoothX) * SMOOTH;
   }
-
   let allBase = true;
-
   items.forEach(item => {
     const rect = item.getBoundingClientRect();
     const center = rect.left + rect.width / 2;
-    let scale = 1;
-    let lift = 0;
-
-    if (active && smoothMouseX > 0) {
-      const dist = Math.abs(smoothMouseX - center);
-      // 가우시안: e^(-d²/(2σ²))
+    let scale = 1, lift = 0;
+    if (active && smoothX > 0) {
+      const dist = Math.abs(smoothX - center);
       const factor = Math.exp(-(dist * dist) / (2 * SIGMA * SIGMA));
       scale = 1 + factor * (MAX_SCALE - 1);
       lift = factor * LIFT_MAX;
     }
-
-    if (Math.abs(scale - 1) > 0.005) allBase = false;
+    if (Math.abs(scale - 1) > 0.003) allBase = false;
     item.style.transform = `scale(${scale.toFixed(3)}) translateY(${-lift.toFixed(2)}px)`;
-    item.style.setProperty('--s', scale.toFixed(3));
   });
-
-  // 비활성 + 다 기본 크기면 raf 종료
   if (!active && allBase) {
-    smoothMouseX = -1;
+    smoothX = -1;
     rafId = null;
+    items.forEach(it => it.style.transform = '');
     return;
   }
-
   rafId = requestAnimationFrame(tick);
 }
 
-// 클릭 → 앱 실행
+// 툴팁 (호버 후 살짝 지연)
+items.forEach(item => {
+  let tipTimer;
+  item.addEventListener('mouseenter', () => {
+    tipTimer = setTimeout(() => item.classList.add('tooltip-show'), 50);
+  });
+  item.addEventListener('mouseleave', () => {
+    clearTimeout(tipTimer);
+    item.classList.remove('tooltip-show');
+  });
+});
+
+// 클릭 → 앱 실행 + 점프
 items.forEach(item => {
   item.addEventListener('click', async () => {
     const app = item.dataset.app;
-
-    // 누름 효과
-    item.classList.add('pressed');
-    setTimeout(() => item.classList.remove('pressed'), 100);
-
-    // 점프 효과
+    // 살짝 누름
+    item.style.transition = 'transform 0.08s ease-out';
+    item.style.transform = (item.style.transform || 'scale(1)') + ' scale(0.92)';
     setTimeout(() => {
-      item.classList.add('jumping');
-      setTimeout(() => item.classList.remove('jumping'), 400);
-    }, 60);
+      item.style.transition = '';
+    }, 100);
 
-    // 실제 앱 실행 (Tauri invoke)
-    if (window.__TAURI__) {
+    if (T) {
       try {
-        await window.__TAURI__.core.invoke('launch_app', { name: app });
+        await T.core.invoke('launch_app', { name: app });
         item.classList.add('running');
-      } catch (err) {
-        console.error('실행 실패:', err);
-      }
+      } catch (err) { console.error('실행 실패:', err); }
     }
   });
 });
 
-// 테마 변경 이벤트 수신
-if (window.__TAURI__) {
-  window.__TAURI__.event.listen('theme-changed', (e) => {
+// 테마/설정 sync
+if (T) {
+  T.event.listen('theme-changed', (e) => {
     document.documentElement.dataset.theme = e.payload;
   });
-  // 초기 테마 적용
-  window.__TAURI__.core.invoke('get_config').then(cfg => {
+  T.event.listen('config-changed', (e) => {
+    if (e.payload?.dock_autohide !== undefined) {
+      document.body.classList.toggle('auto-hide', e.payload.dock_autohide);
+    }
+  });
+  T.core.invoke('get_config').then(cfg => {
     if (cfg.theme) document.documentElement.dataset.theme = cfg.theme;
+    if (cfg.dock_autohide) document.body.classList.add('auto-hide');
   }).catch(() => {});
 }
 </script>
