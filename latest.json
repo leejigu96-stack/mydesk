@@ -1,11 +1,11 @@
 {
-  "version": "0.2.3",
-  "notes": "v0.2.3 — 위젯 잘림 + magnification 강화\n\n변화:\n- 위젯 너비 320→280 줄여서 우측 잘림 해결\n- 위젯 평소 반투명(55%) → 마우스 가까이 가면 100%\n- Claude 세션 글자 잘림 방지 (ellipsis)\n- 독 magnification 더 강하게 (1.65→1.85배, 영향 범위 70→90)\n- 독 자동 숨김 기본 ON",
-  "pub_date": "2026-05-26T03:02:00Z",
+  "version": "0.3.0",
+  "notes": "v0.3.0 — 한 방에 큰 수정\n\n- 위젯 너비 280→260, 위치 우측 안쪽 40px 여유 (잘림 진짜 해결)\n- magnification 진짜 맥 스타일: SIGMA 90→38 (영향 범위 좁게), MAX_SCALE 1.85→1.55, LIFT 22→10\n- 자동 숨김 기본 OFF (사용자가 거슬리면 설정에서 ON)\n- 마우스 위 1~2개 아이콘만 부드럽게 커지고 나머지는 평소 크기",
+  "pub_date": "2026-05-26T03:17:00Z",
   "platforms": {
     "windows-x86_64": {
       "signature": "",
-      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.2.3/MyDesk_0.2.3_x64-setup.exe"
+      "url": "https://github.com/leejigu96-stack/mydesk/releases/download/v0.3.0/MyDesk_0.3.0_x64-setup.exe"
     }
   }
 }

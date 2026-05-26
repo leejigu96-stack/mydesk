@@ -386,9 +386,9 @@ fn position_widgets(app: &tauri::AppHandle) {
             let pos = m.position();
             let size = m.size();
             let widget_size = w.outer_size().unwrap_or_default();
-            // Primary 모니터 우측 상단 (잘리지 않게 안쪽으로)
-            let x = pos.x + size.width as i32 - widget_size.width as i32 - 12;
-            let y = pos.y + 12;
+            // 우측 안쪽으로 40px 여유 두기 (잘림 방지)
+            let x = pos.x + size.width as i32 - widget_size.width as i32 - 40;
+            let y = pos.y + 16;
             let _ = w.set_position(tauri::PhysicalPosition { x, y });
         }
     }
