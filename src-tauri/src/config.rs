@@ -1,4 +1,4 @@
-// MyDesk 설정 — JSON 파일로 저장
+// MyDesk 설정 - JSON 파일로 저장
 // 위치: %APPDATA%\MyDesk\config.json
 
 use serde::{Deserialize, Serialize};
@@ -21,16 +21,25 @@ pub struct AppConfig {
     pub wallpaper_brightness: u32,
     pub wallpaper_speed: u32,
 
-    pub dock_position: String,    // "bottom" / "left" / "right"
+    pub dock_position: String,
     pub dock_size: u32,
     pub dock_autohide: bool,
     pub dock_magnification: bool,
 
-    pub widget_position: String,  // "top-right" / "top-left" / "bottom-right" / "bottom-left"
+    pub widget_position: String,
     pub widget_opacity: u32,
-    pub widget_update_interval: String,  // "realtime" / "30s" / "1m" / "5m"
+    pub widget_update_interval: String,
 
-    pub accent_color: String,  // hex 코드
+    pub accent_color: String,
+
+    // 새로 추가
+    pub theme: String,         // "dark" / "light"
+    pub current_mode: String,  // "normal" / "ai_work" / "nokki" / "focus" / "meeting" / "night"
+
+    // 시스템 튜너 옵션
+    pub auto_clean_temp: bool,
+    pub auto_kill_zombies: bool,
+    pub block_telemetry: bool,
 }
 
 impl Default for AppConfig {
@@ -38,10 +47,10 @@ impl Default for AppConfig {
         Self {
             dock_enabled: true,
             widgets_enabled: true,
-            wallpaper_enabled: true,
+            wallpaper_enabled: false,  // 배경은 기본 OFF (z-order 이슈)
             rounded_corners_enabled: false,
             rounded_corners_radius: 10,
-            autostart: true,
+            autostart: false,
             pause_on_ai_work: true,
             gpu_threshold: 70,
             wallpaper_path: None,
@@ -55,6 +64,11 @@ impl Default for AppConfig {
             widget_opacity: 85,
             widget_update_interval: "30s".to_string(),
             accent_color: "#8b5cf6".to_string(),
+            theme: "dark".to_string(),
+            current_mode: "normal".to_string(),
+            auto_clean_temp: true,
+            auto_kill_zombies: true,
+            block_telemetry: false,
         }
     }
 }

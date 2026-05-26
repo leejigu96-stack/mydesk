@@ -162,13 +162,34 @@ body {
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   cursor: pointer;
-  transition: all 0.2s var(--ease);
+  transition: transform 0.25s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.25s var(--ease);
+  overflow: hidden;
+}
+
+.module-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+  pointer-events: none;
 }
 
 .module-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.25);
+}
+
+.module-card:hover::after { opacity: 1; }
+
+.module-card:active {
+  transform: translateY(-1px) scale(0.99);
+  transition: all 0.1s ease-out;
 }
 
 .module-card.enabled {
@@ -839,6 +860,8 @@ body {
 </main>
 
 <script>
+const T = window.__TAURI__;
+
 // 네비게이션
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
@@ -850,8 +873,33 @@ document.querySelectorAll('.nav-item').forEach(item => {
   });
 });
 
-// 모듈 카드 토글
-document.querySelectorAll('.module-card').forEach(card => {
+// 모듈 카드 토글 — 백엔드 호출로 진짜 ON/OFF
+const moduleMap = {
+  'wallpaper': 'wallpaper',
+  'dock': 'dock',
+  'widgets': 'widgets',
+  'window': 'window'
+};
+
+document.querySelectorAll('.module-card[data-module]').forEach(card => {
+  card.addEventListener('click', async (e) => {
+    if (e.target.closest('button, input, label')) return;
+    const enabled = !card.classList.contains('enabled');
+    card.classList.toggle('enabled');
+    const mod = card.dataset.module;
+    if (T && moduleMap[mod]) {
+      try {
+        await T.core.invoke('toggle_module', { module: moduleMap[mod], enable: enabled });
+      } catch (err) {
+        console.error('모듈 토글 실패:', err);
+        card.classList.toggle('enabled'); // 롤백
+      }
+    }
+  });
+});
+
+// 그 외 카드 (시각용)
+document.querySelectorAll('.module-card:not([data-module])').forEach(card => {
   card.addEventListener('click', (e) => {
     if (e.target.closest('button, input, label')) return;
     card.classList.toggle('enabled');
@@ -874,23 +922,94 @@ document.querySelectorAll('.mode-card').forEach(card => {
   });
 });
 
-// 테마 토글
+// 테마 토글 — 백엔드 호출 (모든 창 sync)
 const themeToggle = document.getElementById('theme-toggle');
 const ball = themeToggle.querySelector('.theme-toggle-ball');
-themeToggle.addEventListener('click', () => {
+themeToggle.addEventListener('click', async () => {
   const cur = document.documentElement.dataset.theme;
   const next = cur === 'dark' ? 'light' : 'dark';
   document.documentElement.dataset.theme = next;
   ball.textContent = next === 'dark' ? '🌙' : '☀️';
-  localStorage.setItem('mydesk-theme', next);
+  if (T) {
+    try { await T.core.invoke('apply_theme', { theme: next }); }
+    catch (err) { console.error('테마 변경 실패:', err); }
+  }
 });
 
-// 저장된 테마 적용
-const saved = localStorage.getItem('mydesk-theme');
-if (saved) {
-  document.documentElement.dataset.theme = saved;
-  ball.textContent = saved === 'dark' ? '🌙' : '☀️';
+// 초기 설정 불러오기
+async function loadInitialConfig() {
+  if (!T) return;
+  try {
+    const cfg = await T.core.invoke('get_config');
+    // 테마
+    if (cfg.theme) {
+      document.documentElement.dataset.theme = cfg.theme;
+      ball.textContent = cfg.theme === 'dark' ? '🌙' : '☀️';
+    }
+    // 모듈 ON/OFF
+    document.querySelectorAll('.module-card[data-module]').forEach(card => {
+      const mod = card.dataset.module;
+      const key = mod + '_enabled';
+      if (cfg[key]) card.classList.add('enabled');
+      else card.classList.remove('enabled');
+    });
+  } catch (err) { console.error('설정 불러오기 실패:', err); }
 }
+loadInitialConfig();
+
+// 자동 최적화 버튼 — 시스템 튜너 페이지
+document.querySelectorAll('.btn-primary').forEach(btn => {
+  if (btn.textContent.trim() === '자동 최적화') {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = '진행 중...';
+      if (T) {
+        try {
+          const result = await T.core.invoke('run_tuner_action', { action: 'auto_optimize' });
+          btn.textContent = '완료 ✓';
+          alert('최적화 완료: ' + result);
+        } catch (err) {
+          btn.textContent = '실패';
+          alert('실패: ' + err);
+        } finally {
+          setTimeout(() => { btn.disabled = false; btn.textContent = '자동 최적화'; }, 2000);
+        }
+      } else {
+        btn.textContent = '미리보기 (실제 실행 X)';
+        setTimeout(() => { btn.textContent = '자동 최적화'; }, 2000);
+      }
+    });
+  }
+});
+
+// 작업 모드 카드 클릭 — 백엔드 호출
+const modeMap = {
+  '일반 모드': 'normal',
+  'AI 작업 모드': 'ai_work',
+  '누끼 모드': 'nokki',
+  '포커스 모드': 'focus',
+  '회의 모드': 'meeting',
+  '야간 모드': 'night',
+};
+document.querySelectorAll('.mode-card').forEach(card => {
+  card.addEventListener('click', async () => {
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    const name = card.querySelector('.mode-name')?.textContent.trim();
+    const mode = modeMap[name];
+    if (T && mode) {
+      try { await T.core.invoke('change_mode', { mode }); }
+      catch (err) { console.error('모드 변경 실패:', err); }
+    }
+  });
+});
+
+// 종료 버튼 (있다면)
+document.querySelectorAll('[data-action="quit"]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (T) T.core.invoke('quit_app');
+  });
+});
 
 // URL 해시 기반 페이지 라우팅 (헤드리스 캡처/직접 링크용)
 function applyHashRoute() {

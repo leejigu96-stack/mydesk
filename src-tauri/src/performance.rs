@@ -1,8 +1,7 @@
-// 시스템 성능 모니터링
-// RAM / CPU / GPU 사용량 조회
+// 시스템 성능 + 데이터 수집
 
 use serde_json::json;
-use sysinfo::{System, RefreshKind, CpuRefreshKind, MemoryRefreshKind, ProcessRefreshKind};
+use sysinfo::{CpuRefreshKind, MemoryRefreshKind, ProcessRefreshKind, RefreshKind, System};
 
 pub fn get_stats() -> serde_json::Value {
     let mut sys = System::new_with_specifics(
@@ -13,7 +12,6 @@ pub fn get_stats() -> serde_json::Value {
     );
     sys.refresh_all();
 
-    // MyDesk 자기 자신의 RAM 사용량
     let our_pid = std::process::id();
     let our_ram = sys
         .process(sysinfo::Pid::from_u32(our_pid))
@@ -29,13 +27,32 @@ pub fn get_stats() -> serde_json::Value {
         "ram_mb_used": used_ram,
         "ram_mb_mydesk": our_ram,
         "cpu_percent": cpu_usage,
-        "gpu_percent": get_gpu_usage(),  // 추후 구현 (Windows nvapi 또는 WMI)
+        "gpu_percent": 0.0,  // 추후
     })
 }
 
-fn get_gpu_usage() -> f32 {
-    // TODO: Windows Performance Counter로 GPU 사용량 가져오기
-    // 또는 nvml-wrapper로 NVIDIA GPU만 모니터링
-    // 지금은 placeholder
-    0.0
+pub fn count_processes(name_contains: &str) -> u32 {
+    let mut sys = System::new_with_specifics(
+        RefreshKind::new().with_processes(ProcessRefreshKind::everything()),
+    );
+    sys.refresh_processes();
+    sys.processes()
+        .values()
+        .filter(|p| p.name().to_lowercase().contains(&name_contains.to_lowercase()))
+        .count() as u32
+}
+
+pub fn count_files_in(path: &str) -> u32 {
+    let p = std::path::Path::new(path);
+    if !p.exists() {
+        return 0;
+    }
+    std::fs::read_dir(p)
+        .map(|entries| {
+            entries
+                .filter_map(|e| e.ok())
+                .filter(|e| e.path().is_file())
+                .count() as u32
+        })
+        .unwrap_or(0)
 }

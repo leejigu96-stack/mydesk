@@ -1,20 +1,20 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "MyDesk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "com.leejigu.mydesk",
   "build": {
-    "frontendDist": "../src",
-    "devUrl": "http://localhost:1420"
+    "frontendDist": "../src"
   },
   "app": {
+    "withGlobalTauri": true,
     "windows": [
       {
         "label": "settings",
         "title": "MyDesk 설정",
         "url": "settings/index.html",
-        "width": 1080,
-        "height": 720,
+        "width": 1100,
+        "height": 750,
         "minWidth": 900,
         "minHeight": 600,
         "decorations": true,
@@ -36,21 +36,23 @@
         "skipTaskbar": true,
         "resizable": false,
         "shadow": false,
-        "visible": false
+        "visible": false,
+        "focus": false
       },
       {
         "label": "widgets",
         "title": "MyDesk Widgets",
         "url": "widgets/index.html",
         "width": 320,
-        "height": 800,
+        "height": 820,
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": false,
         "skipTaskbar": true,
         "resizable": false,
         "shadow": false,
-        "visible": false
+        "visible": false,
+        "focus": false
       },
       {
         "label": "wallpaper",
@@ -59,7 +61,6 @@
         "fullscreen": true,
         "decorations": false,
         "transparent": false,
-        "alwaysOnBottom": true,
         "skipTaskbar": true,
         "resizable": false,
         "shadow": false,
@@ -78,7 +79,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis", "msi"],
+    "targets": ["nsis"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -91,7 +92,7 @@
   "plugins": {
     "updater": {
       "active": true,
-      "endpoints": ["https://github.com/leejigu96/mydesk/releases/latest/download/latest.json"],
+      "endpoints": ["https://github.com/leejigu96-stack/mydesk/releases/latest/download/latest.json"],
       "pubkey": ""
     }
   }

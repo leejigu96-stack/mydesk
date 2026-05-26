@@ -102,7 +102,7 @@ html, body {
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
   padding: 16px;
-  transition: all 0.2s var(--ease);
+  transition: transform 0.25s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.25s var(--ease);
 }
 
 .card:hover {
@@ -112,8 +112,13 @@ html, body {
   box-shadow: var(--shadow-md);
 }
 
+.card:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
 /* 버튼 */
 .btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -124,27 +129,57 @@ html, body {
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.15s var(--ease);
+  transition: all 0.18s var(--ease);
   user-select: none;
   background: var(--bg-glass-light);
   color: var(--text-primary);
+  overflow: hidden;
+}
+
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.15) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s var(--ease);
+  pointer-events: none;
 }
 
 .btn:hover {
   background: var(--bg-glass-hover);
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-.btn:active { transform: translateY(0); }
+.btn:hover::before { opacity: 1; }
+
+.btn:active {
+  transform: translateY(0) scale(0.97);
+  transition: all 0.08s ease-out;
+}
 
 .btn-primary {
   background: var(--accent-grad);
   color: white;
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.25);
 }
 
 .btn-primary:hover {
   filter: brightness(1.1);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(139, 92, 246, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
 }
 
 .btn-ghost {
@@ -196,9 +231,21 @@ html, body {
 .toggle input:checked + .toggle-slider {
   background: var(--accent-grad);
   border-color: transparent;
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
 }
 
-.toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+.toggle input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.toggle:hover .toggle-slider::before {
+  width: 24px;
+}
+
+.toggle:hover input:checked + .toggle-slider::before {
+  transform: translateX(18px);
+}
 
 /* 슬라이더 */
 .range {

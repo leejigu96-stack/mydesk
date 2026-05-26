@@ -41,10 +41,12 @@ pub fn apply_corners(enable: bool, _radius: u32) -> Result<(), String> {
 #[cfg(target_os = "windows")]
 pub fn send_to_back(window: &tauri::WebviewWindow) -> Result<(), String> {
     use windows::Win32::Foundation::HWND;
-    let hwnd = window.hwnd().map_err(|e| e.to_string())?;
+    let raw = window.hwnd().map_err(|e| e.to_string())?;
+    // Tauri의 hwnd()는 raw HWND (*mut c_void) — windows 0.56 HWND(isize) 로 변환
+    let hwnd = HWND(raw.0 as isize);
     unsafe {
         SetWindowPos(
-            HWND(hwnd.0),
+            hwnd,
             HWND_BOTTOM,
             0,
             0,
