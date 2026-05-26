@@ -1,0 +1,24 @@
+# Build outputs
+node_modules/
+target/
+dist/
+*.exe
+*.msi
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+
+# Local captures / scripts
+captures/
+*.ps1
+*.bat
+*.log
+
+# Backup
+*.bak

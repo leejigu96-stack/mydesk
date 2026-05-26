@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>MyDesk 미리보기</title>
+<link rel="stylesheet" href="src/common/style.css">
+<style>
+body {
+  background: #0a0a14;
+  min-height: 100vh;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.preview-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.preview-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.preview-header h1 {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 8px;
+}
+
+.preview-header p {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.preview-frame {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  height: 480px;
+}
+
+.preview-frame-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.4);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.preview-frame-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.preview-frame iframe {
+  width: 100%;
+  height: calc(100% - 45px);
+  border: none;
+  background: transparent;
+}
+
+.preview-window-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.dot.red { background: #ff5f56; }
+.dot.yellow { background: #ffbd2e; }
+.dot.green { background: #27c93f; }
+
+.full-width { grid-column: span 2; }
+
+.intro-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.feature {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+}
+
+.feature-icon {
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.feature-text h4 { font-size: 14px; margin-bottom: 4px; }
+.feature-text p { font-size: 12px; color: var(--text-secondary); }
+
+.preview-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-glass-light);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  border: 1px solid var(--border-soft);
+  transition: all 0.15s var(--ease);
+}
+
+.preview-link:hover {
+  background: var(--bg-glass-hover);
+  transform: translateY(-1px);
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.status-ok { color: var(--success); }
+
+.notice {
+  padding: 16px 20px;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+
+.notice-title {
+  color: #fbbf24;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+</style>
+</head>
+<body>
+<div class="preview-container">
+
+  <div class="preview-header">
+    <h1>🌙 MyDesk</h1>
+    <p>나만의 윈도우 꾸미기 — Tauri로 직접 만든 가벼운 데스크탑 모듈</p>
+  </div>
+
+  <div class="notice">
+    <div class="notice-title">⚠️ 지금은 미리보기 (적용 안 됨)</div>
+    위 4개 UI는 아직 데스크탑에 적용되지 않았어. 너 자는 동안 만들어둔 거고, 깨어나서 확인 후 적용 여부 결정해줘.
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <span class="status-ok">●</span>
+      <span>UI 완성</span>
+    </div>
+    <div class="status-item">
+      <span class="status-ok">●</span>
+      <span>Tauri 백엔드 작성됨</span>
+    </div>
+    <div class="status-item">
+      <span class="status-ok">●</span>
+      <span>설정 시스템 OK</span>
+    </div>
+    <div class="status-item">
+      <span style="color: var(--warning);">●</span>
+      <span>빌드는 안 함 (Rust 설치 후 가능)</span>
+    </div>
+  </div>
+
+  <div class="intro-card">
+    <h2 style="margin-bottom: 8px;">만든 거 한눈에</h2>
+    <p class="text-secondary">아래 4개 모듈이 통합된 데스크탑 꾸미기 시스템</p>
+
+    <div class="feature-list">
+      <div class="feature">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-text">
+          <h4>움직이는 배경화면</h4>
+          <p>Canvas 셰이더 기반 우주 별 애니메이션. 가벼움 (~50MB)</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📦</div>
+        <div class="feature-text">
+          <h4>맥 스타일 독</h4>
+          <p>화면 아래 떠있는 앱 런처. 마우스 오버 확대.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <div class="feature-text">
+          <h4>위젯 시스템</h4>
+          <p>시계 · ResellOn 매출 · 누끼 큐 · Claude 모니터 · 날씨 · 메모</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚙️</div>
+        <div class="feature-text">
+          <h4>설정 페이지</h4>
+          <p>모든 모듈 한 곳에서 제어. 자동시작, AI 작업 감지, 성능 모니터</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 style="margin: 24px 0 16px;">미리보기</h2>
+
+  <div class="preview-grid">
+    <!-- 설정 페이지 -->
+    <div class="preview-frame full-width" style="height: 700px;">
+      <div class="preview-frame-header">
+        <div class="preview-window-dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        <div class="preview-frame-title">설정 페이지 (메인)</div>
+        <a class="preview-link" href="src/settings/index.html" target="_blank" style="margin-left: auto;">새 창에서 열기 ↗</a>
+      </div>
+      <iframe src="src/settings/index.html"></iframe>
+    </div>
+
+    <!-- 독 -->
+    <div class="preview-frame" style="height: 220px;">
+      <div class="preview-frame-header">
+        <div class="preview-window-dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        <div class="preview-frame-title">독 (Dock)</div>
+        <a class="preview-link" href="src/dock/index.html" target="_blank" style="margin-left: auto;">새 창 ↗</a>
+      </div>
+      <iframe src="src/dock/index.html" style="background: linear-gradient(135deg, #4c1d95, #1e1b4b);"></iframe>
+    </div>
+
+    <!-- 위젯 -->
+    <div class="preview-frame" style="height: 700px;">
+      <div class="preview-frame-header">
+        <div class="preview-window-dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        <div class="preview-frame-title">위젯</div>
+        <a class="preview-link" href="src/widgets/index.html" target="_blank" style="margin-left: auto;">새 창 ↗</a>
+      </div>
+      <iframe src="src/widgets/index.html" style="background: linear-gradient(135deg, #4c1d95, #1e1b4b);"></iframe>
+    </div>
+
+    <!-- 배경화면 -->
+    <div class="preview-frame full-width" style="height: 500px;">
+      <div class="preview-frame-header">
+        <div class="preview-window-dots">
+          <div class="dot red"></div>
+          <div class="dot yellow"></div>
+          <div class="dot green"></div>
+        </div>
+        <div class="preview-frame-title">움직이는 배경화면 (우주 별 셰이더)</div>
+        <a class="preview-link" href="src/wallpaper/index.html" target="_blank" style="margin-left: auto;">새 창 ↗</a>
+      </div>
+      <iframe src="src/wallpaper/index.html"></iframe>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

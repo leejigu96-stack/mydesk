@@ -1,0 +1,17 @@
+{
+  "name": "my-desk",
+  "version": "0.1.0",
+  "description": "MyDesk - 나만의 데스크탑 꾸미기",
+  "private": true,
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "preview-settings": "start src/settings/index.html",
+    "preview-dock": "start src/dock/index.html",
+    "preview-widgets": "start src/widgets/index.html",
+    "preview-wallpaper": "start src/wallpaper/index.html"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

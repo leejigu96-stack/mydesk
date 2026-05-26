@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>MyDesk Dock</title>
+<link rel="stylesheet" href="../common/style.css">
+<style>
+body {
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 12px;
+  -webkit-app-region: drag;
+}
+
+.dock {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  -webkit-app-region: no-drag;
+}
+
+.dock-item {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  cursor: pointer;
+  transition: all 0.25s var(--ease-bounce);
+  transform-origin: bottom center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dock-item:hover {
+  transform: scale(1.4) translateY(-12px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+}
+
+/* 인접 아이콘도 살짝 확대 (맥 dock 효과 흉내) */
+.dock-item:hover + .dock-item,
+.dock-item:has(+ .dock-item:hover) {
+  transform: scale(1.15) translateY(-4px);
+}
+
+.dock-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--border-soft);
+  margin: 0 4px;
+  align-self: center;
+}
+
+/* 활성 표시 점 */
+.dock-item.running::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* 툴팁 */
+.dock-item::before {
+  content: attr(data-name);
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s var(--ease);
+}
+
+.dock-item:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* 각 앱 아이콘 배경색 */
+.app-chrome { background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335); }
+.app-claude { background: linear-gradient(135deg, #ff7a59, #ff4940); }
+.app-resellon { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.app-nokki { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+.app-vscode { background: linear-gradient(135deg, #007acc, #0066b8); }
+.app-files { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.app-photoshop { background: linear-gradient(135deg, #001e36, #31a8ff); color: white; }
+.app-kakao { background: linear-gradient(135deg, #fee500, #fdd835); color: #3c1e1e; }
+.app-trash { background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); }
+.app-settings { background: linear-gradient(135deg, #64748b, #475569); }
+</style>
+</head>
+<body>
+<div class="dock">
+  <div class="dock-item app-chrome running" data-name="Chrome">🌐</div>
+  <div class="dock-item app-claude running" data-name="Claude">🤖</div>
+  <div class="dock-item app-resellon running" data-name="ResellOn 업로드">📦</div>
+  <div class="dock-item app-nokki" data-name="누끼 GUI">✂️</div>
+  <div class="dock-item app-vscode" data-name="VS Code">💻</div>
+  <div class="dock-item app-photoshop" data-name="포토샵">Ps</div>
+  <div class="dock-item app-kakao running" data-name="카카오톡">💬</div>
+
+  <div class="dock-divider"></div>
+
+  <div class="dock-item app-files" data-name="파일 탐색기">📁</div>
+  <div class="dock-item app-settings" data-name="MyDesk 설정">⚙️</div>
+  <div class="dock-item app-trash" data-name="휴지통">🗑️</div>
+</div>
+
+<script>
+// 클릭 시 살짝 누르는 효과
+document.querySelectorAll('.dock-item').forEach(item => {
+  item.addEventListener('click', () => {
+    item.style.transition = 'transform 0.08s var(--ease)';
+    item.style.transform = 'scale(0.92) translateY(0)';
+    setTimeout(() => {
+      item.style.transition = '';
+      item.style.transform = '';
+      item.classList.add('running');
+    }, 100);
+  });
+});
+</script>
+</body>
+</html>

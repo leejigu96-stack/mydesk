@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<title>MyDesk - 라이트 모드 미리보기</title>
+<link rel="stylesheet" href="src/common/style.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  color: rgba(0,0,0,0.85);
+  background: #f5f5f7;
+}
+
+/* 라이트 배경 (밝은 그라데이션) */
+#bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.taskbar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+  z-index: 50;
+}
+
+.taskbar-start { width: 32px; height: 32px; border-radius: 8px; background: rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.taskbar-search { width: 200px; height: 32px; border-radius: 16px; background: rgba(0,0,0,0.04); display: flex; align-items: center; padding: 0 14px; font-size: 12px; color: rgba(0,0,0,0.5); }
+.taskbar-spacer { flex: 1; }
+.taskbar-tray { display: flex; gap: 8px; font-size: 12px; color: rgba(0,0,0,0.65); align-items: center; }
+
+.desktop-icons {
+  position: absolute;
+  top: 32px;
+  left: 32px;
+  display: grid;
+  grid-template-columns: repeat(1, 88px);
+  gap: 16px;
+  z-index: 5;
+}
+
+.desktop-icon { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; border-radius: 8px; text-align: center; }
+.icon-img { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12); color: white; }
+.icon-label { font-size: 11px; max-width: 80px; word-wrap: break-word; color: rgba(0,0,0,0.85); text-shadow: 0 1px 2px rgba(255,255,255,0.5); }
+
+/* 위젯 */
+.widgets-area {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 320px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.widget {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: 18px 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+}
+
+.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.widget-title { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(0,0,0,0.4); }
+
+.clock-time {
+  font-size: 56px;
+  font-weight: 200;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(180deg, #1a1a1a, #6b6b6b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.clock-seconds { font-size: 28px; opacity: 0.4; }
+.clock-date { font-size: 13px; color: rgba(0,0,0,0.55); margin-top: 6px; }
+
+.sales-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sales-item { padding: 12px; background: rgba(0, 0, 0, 0.03); border-radius: 12px; border: 1px solid rgba(0, 0, 0, 0.05); }
+.sales-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(0,0,0,0.4); margin-bottom: 4px; }
+.sales-amount { font-size: 18px; font-weight: 700; }
+.sales-delta { font-size: 11px; margin-top: 2px; color: #059669; }
+
+.queue-stats { display: flex; gap: 16px; }
+.queue-stat-num { font-size: 28px; font-weight: 700; }
+.queue-stat-label { font-size: 11px; color: rgba(0,0,0,0.55); margin-top: 2px; }
+.queue-progress { height: 6px; background: rgba(0,0,0,0.05); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.queue-bar { height: 100%; background: linear-gradient(90deg, #8b5cf6, #6366f1); width: 65%; }
+.live-badge { font-size: 9px; color: #dc2626; font-weight: 700; letter-spacing: 0.1em; }
+
+/* 독 */
+.dock {
+  position: absolute;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+  z-index: 30;
+}
+
+.dock-item {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  position: relative;
+  background: linear-gradient(135deg, rgba(0,0,0,0.04), rgba(0,0,0,0.02));
+  border: 1px solid rgba(0,0,0,0.04);
+  color: white;
+}
+
+.dock-divider { width: 1px; height: 36px; background: rgba(0,0,0,0.1); margin: 0 4px; align-self: center; }
+
+.dock-item.running::after { content: ""; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: rgba(0,0,0,0.5); }
+
+.app-chrome { background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335); }
+.app-claude { background: linear-gradient(135deg, #ff7a59, #ff4940); }
+.app-resellon { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.app-nokki { background: linear-gradient(135deg, #8b5cf6, #6366f1); }
+.app-vscode { background: linear-gradient(135deg, #007acc, #0066b8); }
+.app-photoshop { background: linear-gradient(135deg, #001e36, #31a8ff); }
+.app-kakao { background: linear-gradient(135deg, #fee500, #fdd835); color: #3c1e1e; }
+.app-files { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+.app-settings { background: linear-gradient(135deg, #64748b, #475569); }
+.app-trash { background: linear-gradient(135deg, rgba(0,0,0,0.06), rgba(0,0,0,0.03)); color: rgba(0,0,0,0.5); }
+
+/* 가짜 창 */
+.fake-window {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.fake-window-1 { top: 100px; left: 200px; width: 720px; height: 480px; }
+.fake-window-2 { top: 220px; left: 350px; width: 600px; height: 360px; }
+
+.fake-window-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(245, 245, 247, 0.9);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.window-dot { width: 12px; height: 12px; border-radius: 50%; }
+.window-title-text { font-size: 12px; color: rgba(0,0,0,0.6); margin-left: 8px; }
+.fake-window-body { padding: 24px; color: rgba(0,0,0,0.85); font-size: 13px; }
+
+.code-line { font-family: 'Consolas', monospace; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+.code-line .kw { color: #9333ea; }
+.code-line .str { color: #059669; }
+.code-line .fn { color: #d97706; }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="desktop-icons">
+  <div class="desktop-icon">
+    <div class="icon-img" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">📁</div>
+    <div class="icon-label">상품 폴더</div>
+  </div>
+  <div class="desktop-icon">
+    <div class="icon-img" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">✂️</div>
+    <div class="icon-label">누끼 작업</div>
+  </div>
+  <div class="desktop-icon">
+    <div class="icon-img" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">📊</div>
+    <div class="icon-label">매출 보고서</div>
+  </div>
+</div>
+
+<div class="fake-window fake-window-1">
+  <div class="fake-window-titlebar">
+    <div class="window-dot" style="background: #ff5f56;"></div>
+    <div class="window-dot" style="background: #ffbd2e;"></div>
+    <div class="window-dot" style="background: #27c93f;"></div>
+    <div class="window-title-text">ResellOn 관리자</div>
+  </div>
+  <div class="fake-window-body">
+    <h3 style="margin-bottom: 16px;">상품 관리</h3>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+      <div style="background: rgba(0,0,0,0.03); border-radius: 8px; height: 100px; padding: 12px;">
+        <div style="font-size: 11px; color: rgba(0,0,0,0.5);">대기 중</div>
+        <div style="font-size: 24px; font-weight: 700; margin-top: 4px;">12개</div>
+      </div>
+      <div style="background: rgba(0,0,0,0.03); border-radius: 8px; height: 100px; padding: 12px;">
+        <div style="font-size: 11px; color: rgba(0,0,0,0.5);">처리 완료</div>
+        <div style="font-size: 24px; font-weight: 700; margin-top: 4px;">87개</div>
+      </div>
+      <div style="background: rgba(0,0,0,0.03); border-radius: 8px; height: 100px; padding: 12px;">
+        <div style="font-size: 11px; color: rgba(0,0,0,0.5);">오늘 등록</div>
+        <div style="font-size: 24px; font-weight: 700; margin-top: 4px;">23개</div>
+      </div>
+    </div>
+    <div style="margin-top: 20px; background: rgba(0,0,0,0.02); border-radius: 8px; padding: 16px;">
+      <div style="font-size: 11px; color: rgba(0,0,0,0.4); margin-bottom: 8px;">최근 활동</div>
+      <div style="font-size: 12px; line-height: 1.8;">
+        <div>• 루이비통 가방 누끼 처리 완료</div>
+        <div>• 샤넬 클러치 사이트 업로드</div>
+        <div>• 구찌 지갑 가격 조정</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fake-window fake-window-2">
+  <div class="fake-window-titlebar">
+    <div class="window-dot" style="background: #ff5f56;"></div>
+    <div class="window-dot" style="background: #ffbd2e;"></div>
+    <div class="window-dot" style="background: #27c93f;"></div>
+    <div class="window-title-text">VS Code - main.rs</div>
+  </div>
+  <div class="fake-window-body">
+    <div class="code-line"><span class="kw">use</span> tauri::{Manager, WebviewWindow};</div>
+    <div class="code-line"></div>
+    <div class="code-line"><span class="kw">fn</span> <span class="fn">main</span>() {</div>
+    <div class="code-line">&nbsp;&nbsp;tauri::<span class="fn">Builder</span>::<span class="fn">default</span>()</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">setup</span>(|app| {</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">let</span> dock = app.<span class="fn">get_webview_window</span>(<span class="str">"dock"</span>);</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">let</span> widgets = app.<span class="fn">get_webview_window</span>(<span class="str">"widgets"</span>);</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">position_dock</span>(&app);</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">position_widgets</span>(&app);</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ok(())</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;})</div>
+    <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;.<span class="fn">run</span>(tauri::<span class="fn">generate_context</span>!())</div>
+    <div class="code-line">}</div>
+  </div>
+</div>
+
+<div class="widgets-area">
+  <div class="widget">
+    <div class="widget-header">
+      <div class="widget-title"><span>🕐</span> 시계</div>
+    </div>
+    <div class="clock-time">23:47<span class="clock-seconds">:23</span></div>
+    <div class="clock-date">2026년 5월 25일 일요일</div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <div class="widget-title"><span>💰</span> ResellOn 매출</div>
+      <div class="live-badge">● LIVE</div>
+    </div>
+    <div class="sales-grid">
+      <div class="sales-item"><div class="sales-label">오늘</div><div class="sales-amount">₩2.34M</div><div class="sales-delta">▲ 12.4%</div></div>
+      <div class="sales-item"><div class="sales-label">이번주</div><div class="sales-amount">₩18.4M</div><div class="sales-delta">▲ 8.1%</div></div>
+    </div>
+  </div>
+
+  <div class="widget">
+    <div class="widget-header">
+      <div class="widget-title"><span>✂️</span> 누끼 작업</div>
+    </div>
+    <div class="queue-stats">
+      <div><div class="queue-stat-num">12</div><div class="queue-stat-label">대기</div></div>
+      <div><div class="queue-stat-num">87</div><div class="queue-stat-label">완료</div></div>
+      <div><div class="queue-stat-num">2</div><div class="queue-stat-label">오류</div></div>
+    </div>
+    <div class="queue-progress"><div class="queue-bar"></div></div>
+  </div>
+</div>
+
+<div class="dock">
+  <div class="dock-item app-chrome running">🌐</div>
+  <div class="dock-item app-claude running">🤖</div>
+  <div class="dock-item app-resellon running">📦</div>
+  <div class="dock-item app-nokki">✂️</div>
+  <div class="dock-item app-vscode running">💻</div>
+  <div class="dock-item app-photoshop" style="color:white;">Ps</div>
+  <div class="dock-item app-kakao running">💬</div>
+  <div class="dock-divider"></div>
+  <div class="dock-item app-files">📁</div>
+  <div class="dock-item app-settings">⚙️</div>
+  <div class="dock-item app-trash">🗑️</div>
+</div>
+
+<div class="taskbar">
+  <div class="taskbar-start">⊞</div>
+  <div class="taskbar-search">🔍 검색</div>
+  <div class="taskbar-spacer"></div>
+  <div class="taskbar-tray">
+    <span>🌐</span>
+    <span>🔊</span>
+    <span>한</span>
+    <span>23:47</span>
+    <span>2026-05-25</span>
+  </div>
+</div>
+
+<script>
+// 라이트 모드 배경: 부드러운 파스텔 그라데이션
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 1920;
+canvas.height = 1080;
+
+const grad = ctx.createLinearGradient(0, 0, 1920, 1080);
+grad.addColorStop(0, '#fef3c7');
+grad.addColorStop(0.5, '#e0e7ff');
+grad.addColorStop(1, '#fce7f3');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, 1920, 1080);
+
+// 부드러운 구름 같은 점
+for (let i = 0; i < 30; i++) {
+  const x = Math.random() * 1920;
+  const y = Math.random() * 1080;
+  const r = 100 + Math.random() * 200;
+  const cloudGrad = ctx.createRadialGradient(x, y, 0, x, y, r);
+  cloudGrad.addColorStop(0, `rgba(255, 255, 255, ${0.2 + Math.random() * 0.3})`);
+  cloudGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = cloudGrad;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fill();
+}
+</script>
+</body>
+</html>
